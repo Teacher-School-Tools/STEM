@@ -1,0 +1,188 @@
+
+---
+const categories = [
+  {
+    name: "Block 1",
+    folder: "../pages/u-andrew",
+    baseUrl: "../u-andrew/",
+  },
+  {
+    name: "Block 2",
+    folder: "../pages/u-ricky/",
+    baseUrl: "../u-ricky/",
+  },
+];
+
+const allPages = Object.keys(
+  import.meta.glob("../pages/**/*.astro")
+).map((path) => path.replace(/\\/g, "/"));
+
+const categoryFolders = [
+  ...new Set(
+    allPages
+      .map((path) => {
+        const match = path.match(
+          /^\.\.\/pages\/([^/]+)\/[^/]+\.astro$/
+        );
+
+        return match ? match[1] : null;
+      })
+      .filter((folder): folder is string => folder !== null)
+  ),
+].sort();
+
+const menus = categoryFolders.map((folder) => {
+  const resources = allPages
+    .filter((path) => {
+      const match = path.match(
+        /^\.\.\/pages\/([^/]+)\/([^/]+)\.astro$/
+      );
+
+      return (
+        match &&
+        match[1] === folder &&
+        match[2] !== "index"
+      );
+    })
+    .map((path) => {
+      const filename = path.split("/").pop()!.replace(/\.astro$/, "");
+
+      return {
+        name: filename
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (letter) => letter.toUpperCase()),
+        href: `/${folder}/${filename}`,
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return {
+    name: folder.replace(/-/g, " "),
+    href: `/${folder}/`,
+    resources,
+  };
+});
+---
+
+<header class="site-header">
+  <nav class="navbar" aria-label="Main navigation">
+    <a href="/" class="logo">STEM Capstone</a>
+
+    <ul class="nav-links">
+
+      {menus.map((menu) => (
+        <li class="dropdown">
+          <a
+            href={menu.href}
+            class="dropdown-trigger"
+            aria-haspopup="true"
+          >
+            {menu.name}
+            <span aria-hidden="true">▾</span>
+          </a>
+
+          <ul class="dropdown-menu">
+            {menu.resources.map((resource) => (
+              <li>
+                <a href={resource.href}>{resource.name}</a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  <div>
+    <a href="https://github.com/Teacher-School-Tools/rickyfann.github.io" target="_blank">
+				<span class="sr-only">Go to Ricky Fan's GitHub repo</span>
+				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32">
+					<path
+						fill="currentColor"
+						d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+					></path>
+				</svg>
+			</a>
+  </div>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 100;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 2rem;
+    min-height: 70px;
+  }
+
+  .logo {
+    color: #1f2937;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 0.75rem 0;
+    color: #374151;
+    text-decoration: none;
+  }
+
+  .nav-links a:hover,
+  .nav-links a:focus-visible {
+    color: #2563eb;
+  }
+
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    max-height: 70vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0.5rem 0;
+    list-style: none;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 10%);
+  }
+
+  .dropdown-menu a {
+    padding: 0.65rem 1rem;
+    white-space: nowrap;
+  }
+
+  .dropdown-menu a:hover,
+  .dropdown-menu a:focus-visible {
+    background: #f3f4f6;
+  }
+
+  .dropdown:hover .dropdown-menu,
+  .dropdown:focus-within .dropdown-menu {
+    display: block;
+  }
+</style>
