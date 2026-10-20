@@ -1,5 +1,6 @@
-
 ---
+const base = import.meta.env.BASE_URL;
+
 const allPages = Object.keys(
   import.meta.glob("../pages/**/*.astro")
 ).map((path) => path.replace(/\\/g, "/"));
@@ -17,6 +18,7 @@ const categoryFolders = [
       .filter((folder): folder is string => folder !== null)
   ),
 ].sort();
+
 
 const menus = categoryFolders.map((folder) => {
   const resources = allPages
@@ -45,7 +47,7 @@ const menus = categoryFolders.map((folder) => {
 
   return {
     name: folder.replace(/-/g, " "),
-    href: `/${folder}/`,
+    href: `${base}/${folder}/`,
     resources,
   };
 });
