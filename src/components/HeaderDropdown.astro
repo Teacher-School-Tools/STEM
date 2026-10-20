@@ -19,7 +19,6 @@ const categoryFolders = [
   ),
 ].sort();
 
-
 const menus = categoryFolders.map((folder) => {
   const resources = allPages
     .filter((path) => {
@@ -56,7 +55,7 @@ const menus = categoryFolders.map((folder) => {
 <header class="site-header">
   <nav class="navbar" aria-label="Main navigation">
 
-    <a href="/" class="logo">STEM Capstone</a>
+    <a href={base} class="logo">STEM Capstone</a>
 
     <ul class="nav-links">
 
