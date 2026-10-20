@@ -73,7 +73,7 @@ const menus = categoryFolders.map((folder) => {
           <ul class="dropdown-menu">
             {menu.resources.map((resource) => (
               <li>
-                <a href={resource.href}>{resource.name}</a>
+                <a href={base + resource.href}>{resource.name}</a>
               </li>
             ))}
           </ul>
