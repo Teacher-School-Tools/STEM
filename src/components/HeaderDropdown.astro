@@ -1,18 +1,5 @@
 
 ---
-const categories = [
-  {
-    name: "Block 1",
-    folder: "../pages/u-andrew",
-    baseUrl: "../u-andrew/",
-  },
-  {
-    name: "Block 2",
-    folder: "../pages/u-ricky/",
-    baseUrl: "../u-ricky/",
-  },
-];
-
 const allPages = Object.keys(
   import.meta.glob("../pages/**/*.astro")
 ).map((path) => path.replace(/\\/g, "/"));
@@ -66,6 +53,7 @@ const menus = categoryFolders.map((folder) => {
 
 <header class="site-header">
   <nav class="navbar" aria-label="Main navigation">
+
     <a href="/" class="logo">STEM Capstone</a>
 
     <ul class="nav-links">
@@ -92,7 +80,9 @@ const menus = categoryFolders.map((folder) => {
       ))}
     </ul>
   <div>
-    <a href="https://github.com/Teacher-School-Tools/rickyfann.github.io" target="_blank">
+  </div>
+  <div>
+    <a href="https://github.com/Teacher-School-Tools/STEM" target="_blank">
 				<span class="sr-only">Go to Ricky Fan's GitHub repo</span>
 				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32">
 					<path

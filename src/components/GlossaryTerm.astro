@@ -1,0 +1,60 @@
+
+---
+interface Props {
+  term: string;
+  definition: string;
+  href: string;
+}
+
+const { term, definition, href } = Astro.props;
+---
+
+<a
+  href={href}
+  class="glossary-term"
+  aria-label={`${term}: ${definition}. Click to view glossary entry.`}
+>
+  {term}
+  <span class="tooltip" role="tooltip">
+    {definition}
+  </span>
+</a>
+
+<style>
+  .glossary-term {
+    position: relative;
+    display: inline-block;
+    color: #2563eb;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 280px;
+    padding: 10px 12px;
+    background: #1f2937;
+    color: white;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: none;
+    z-index: 100;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  .glossary-term:hover .tooltip,
+  .glossary-term:focus-visible .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+</style>

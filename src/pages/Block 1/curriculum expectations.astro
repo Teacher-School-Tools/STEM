@@ -1,0 +1,28 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import HeaderDropdown from '../../components/HeaderDropdown.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import GlossaryTerm from "../../components/GlossaryTerm.astro";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<HeaderDropdown />
+		<main>
+			<h1>Curriculum Expectations</h1>
+			<p>
+				<GlossaryTerm
+				term="covalent bond"
+				definition="A chemical bond formed when atoms share electrons."
+				href="../../Appendices#covalent_bond/"
+				/>
+			</p>
+		</main>
+		<Footer />
+	</body>
+</html>
