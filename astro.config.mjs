@@ -6,7 +6,8 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://rickyfann.github.io',
+	site: 'https://teacher-school-tools.github.io',
+	base: '/STEM',
 	integrations: [mdx(), sitemap()],
 	fonts: [
 		{
