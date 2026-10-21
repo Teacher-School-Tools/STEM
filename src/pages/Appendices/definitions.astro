@@ -4,6 +4,12 @@ import Footer from '../../components/Footer.astro';
 import HeaderDropdown from '../../components/HeaderDropdown.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 import definitionsTable from "../../../definitionstable.txt?raw";
+
+const htmlTable = definitionsTable
+	.trim()
+	.split(/\n\s*\n/)
+	.map(paragraph=>`<p>${paragraph.replace(/\n/g," ")}</p>`)
+	.join("\n");
 ---
 
 <!doctype html>
@@ -15,9 +21,7 @@ import definitionsTable from "../../../definitionstable.txt?raw";
 		<HeaderDropdown />
 		<main>
 			<h1>Definitions</h1>
-			<p>
-                {definitionsTable}
-			</p>
+                {htmlTable}
 		</main>
 		<Footer />
 	</body>
