@@ -1,0 +1,253 @@
+
+---
+const currentPath = Astro.props.currentPath ?? "/";
+
+// Automatically discover every Astro page under src/pages/
+const pageFiles = Object.keys(
+  import.meta.glob("../pages/**/*.astro")
+);
+
+// Convert folder and file names into readable labels
+function formatName(name) {
+  return name
+    .replace(/\.(astro|md|mdx)$/, "")
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+// Convert a file path into its website route
+
+function getHref(relativePath) {
+  const route = relativePath
+    .replace(/\.(astro|md|mdx)$/, "")
+    .replace(/\/index$/, "");
+
+  const base = import.meta.env.BASE_URL.endsWith("/")
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+
+  return route
+    ? `${base}${route}/`
+    : base;
+}
+
+
+// Group pages by their first folder inside src/pages/
+const categoryMap = new Map();
+
+for (const file of pageFiles) {
+  const relativePath = file
+    .replace(/^.*\/pages\//, "")
+    .replace(/^\.\.\/pages\//, "")
+    .replace(/\.(astro|md|mdx)$/, "");
+
+  const parts = relativePath.split("/");
+  
+  // Ignore files directly inside src/pages/
+  if (parts.length < 2) continue;
+
+  const folder = parts[0];
+
+  if (!categoryMap.has(folder)) {
+    categoryMap.set(folder, {
+      name: formatName(folder),
+      href: `${import.meta.env.BASE_URL}${folder}/`,
+      pages: [],
+    });
+  }
+
+  // The folder's index page is the category landing page
+  if (parts.length === 2 && parts[1] === "index") {
+    categoryMap.get(folder).href = `${import.meta.env.BASE_URL}/${folder}`;
+    continue;
+  }
+
+  const pageName = parts[parts.length - 1];
+
+  // Ignore index files in nested folders to avoid duplicate links
+  if (pageName === "index") continue;
+
+  categoryMap.get(folder).pages.push({
+    name: formatName(pageName),
+    href: getHref(relativePath),
+  });
+}
+
+const categories = [...categoryMap.values()].sort(
+  (a, b) => a.name.localeCompare(b.name)
+);
+
+for (const category of categories) {
+  category.pages.sort((a, b) => a.name.localeCompare(b.name));
+}
+---
+
+<aside class="sidebar" id="sidebar">
+  <button
+    class="sidebar-toggle"
+    id="sidebar-toggle"
+    aria-label="Collapse sidebar"
+    aria-expanded="true"
+    aria-controls="sidebar-content"
+  >
+    <span class="toggle-icon">☰</span>
+    <span class="toggle-label"></span>
+  </button>
+
+  <nav id="sidebar-content" aria-label="Main navigation">
+    {categories.map((category) => (
+      <section class="sidebar-category">
+        <a class="category-heading" href={category.href}>
+          {category.name}
+        </a>
+
+        <div class="subcategory-list">
+          {category.pages.map((page) => (
+            <a
+              class:list={[
+                "subcategory",
+                { active: currentPath.replace(/\/$/, "") === page.href.replace(/\/$/, "") },
+              ]}
+              href={page.href}
+            >
+              {page.name}
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </nav>
+</aside>
+
+<script>
+  const sidebar = document.querySelector("#sidebar");
+  const toggle = document.querySelector("#sidebar-toggle");
+
+  toggle?.addEventListener("click", () => {
+    const collapsed = sidebar?.classList.toggle("collapsed") ?? false;
+
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+    toggle.setAttribute(
+      "aria-label",
+      collapsed ? "Expand sidebar" : "Collapse sidebar"
+    );
+
+    const label = toggle.querySelector(".toggle-label");
+    if (label) {
+      label.textContent = collapsed ? "" : "";
+    }
+  });
+</script>
+
+<style>
+
+
+.sidebar {
+  flex: 0 0 300px;
+  width: 300px;
+  min-width: 0;
+  min-height: 100vh;
+  box-sizing: border-box;
+  margin: 0;
+  overflow-x: hidden;
+  background-color: aliceblue;
+  transition: flex-basis 0.2s ease-in-out, background-color 0.2s ease;
+}
+
+.sidebar.collapsed {
+  flex-basis: 44px;
+  width: 44px;
+  transition: flex-basis 0.2s ease-in-out, background-color 0.2s ease;
+}
+
+/* Navigation links */
+.category-heading,
+.subcategory {
+  display: block;
+  padding: 10px 12px;
+  color: inherit;
+  text-decoration: none;
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.category-heading {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.subcategory {
+  padding: 8px 12px 8px 28px;
+  font-size: 0.99rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sidebar-toggle:hover {
+  background-color: rgba(128, 128, 128, 0.12);
+}
+
+.sidebar-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+
+.toggle-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+}
+
+/* Collapsed state */
+.sidebar.collapsed .category-heading,
+.sidebar.collapsed .subcategory-list {
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+  /* transition: opacity 0.05s ease 0.05s; */
+}
+
+/* Restore text after expanding */
+.sidebar:not(.collapsed) .category-heading,
+.sidebar:not(.collapsed) .subcategory-list {
+  transition: opacity 0.2s ease 0.1s;
+}
+
+.sidebar.collapsed .toggle-label {
+  opacity: 1;
+}
+
+.sidebar.collapsed .sidebar-toggle {
+  justify-content: flex-start;
+  padding: 0 10px;
+  gap: 10px;
+}
+
+</style>

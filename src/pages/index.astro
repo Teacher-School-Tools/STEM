@@ -4,6 +4,8 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import HeaderDropdown from '../components/HeaderDropdown.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { MainLayout } from '../../components/MainLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
 const base = import.meta.env.BASE_URL;
 ---
 
@@ -15,7 +17,9 @@ const base = import.meta.env.BASE_URL;
 	<body>
 		<!-- <Header /> -->
 		<HeaderDropdown/>
+		<Sidebar/>
 		<main>
+
 			<h1>Welcome to SCH3U!</h1>
 			<p>
 				This website hosts various resources, lesson plans, and content covering the grade 11 university stream chemistry course. Use the section headers at the top to find content regarding the 5 course specific streams for grade 11 chemistry.
