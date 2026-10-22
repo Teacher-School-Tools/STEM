@@ -3,24 +3,22 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import HeaderDropdown from '../../components/HeaderDropdown.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-const base = import.meta.env.BASE_URL;
+import MainLayout from '../../layouts/MainLayout.astro';
 ---
 
 <!doctype html>
 <html lang="en">
+	<MainLayout>
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
-		<HeaderDropdown />
 		<main>
-			<h1>Introduction</h1>
+			<h1>Landing Page</h1>
 			<p>
-				This section discusses __, the suggested lesson plan order, the implications of __, and recommendations.
-				
+				dhruv
 			</p>
-			<h2><a href=`${base}/Curriculum Expectations`>Curriculum Expectations</a></h2>
 		</main>
-		<Footer />
 	</body>
+	</MainLayout>
 </html>

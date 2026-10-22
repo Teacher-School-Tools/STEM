@@ -11,26 +11,24 @@ const pageFiles = Object.keys(
 function formatName(name) {
   return name
     .replace(/\.(astro|md|mdx)$/, "")
+    .replace(/^\d+-/, "")
     .replace(/[-_]/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-// Convert a file path into its website route
+// Ensure the base URL ends with exactly one slash
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
 
+// Convert a file path into its website route
 function getHref(relativePath) {
   const route = relativePath
     .replace(/\.(astro|md|mdx)$/, "")
     .replace(/\/index$/, "");
 
-  const base = import.meta.env.BASE_URL.endsWith("/")
-    ? import.meta.env.BASE_URL
-    : `${import.meta.env.BASE_URL}/`;
-
-  return route
-    ? `${base}${route}/`
-    : base;
+  return route ? `${base}${route}/` : base;
 }
-
 
 // Group pages by their first folder inside src/pages/
 const categoryMap = new Map();
@@ -42,23 +40,24 @@ for (const file of pageFiles) {
     .replace(/\.(astro|md|mdx)$/, "");
 
   const parts = relativePath.split("/");
-  
+
   // Ignore files directly inside src/pages/
   if (parts.length < 2) continue;
 
   const folder = parts[0];
 
   if (!categoryMap.has(folder)) {
+    // Remove numeric prefix for the category's display name
     categoryMap.set(folder, {
       name: formatName(folder),
-      href: `${import.meta.env.BASE_URL}${folder}/`,
+      href: `${base}${folder}/`,
       pages: [],
     });
   }
 
-  // The folder's index page is the category landing page
+  // The category's index page is its landing page
   if (parts.length === 2 && parts[1] === "index") {
-    categoryMap.get(folder).href = `${import.meta.env.BASE_URL}/${folder}`;
+    categoryMap.get(folder).href = `${base}${folder}/`;
     continue;
   }
 
@@ -73,10 +72,22 @@ for (const file of pageFiles) {
   });
 }
 
-const categories = [...categoryMap.values()].sort(
-  (a, b) => a.name.localeCompare(b.name)
-);
+// Sort categories by numeric prefix, then alphabetically
+const categories = [...categoryMap.entries()]
+  .sort(([folderA], [folderB]) => {
+    const getOrder = (folder) => {
+      const match = folder.match(/^(\d+)-/);
+      return match ? Number(match[1]) : Infinity;
+    };
 
+    return (
+      getOrder(folderA) - getOrder(folderB) ||
+      folderA.localeCompare(folderB)
+    );
+  })
+  .map(([, category]) => category);
+
+// Sort pages within each category alphabetically
 for (const category of categories) {
   category.pages.sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -119,45 +130,90 @@ for (const category of categories) {
   </nav>
 </aside>
 
+
+
+
 <script>
+  const initializeSidebar = () => {
   const sidebar = document.querySelector("#sidebar");
   const toggle = document.querySelector("#sidebar-toggle");
 
-  toggle?.addEventListener("click", () => {
-    const collapsed = sidebar?.classList.toggle("collapsed") ?? false;
+  if (!sidebar || !toggle) return;
 
+  const storageKey = "sidebar-collapsed";
+
+  // Restore the saved sidebar state
+  const isCollapsed = sessionStorage.getItem(storageKey) === "true";
+
+  sidebar.classList.toggle("collapsed", isCollapsed);
+
+  const updateToggle = (collapsed) => {
     toggle.setAttribute("aria-expanded", String(!collapsed));
     toggle.setAttribute(
       "aria-label",
       collapsed ? "Expand sidebar" : "Collapse sidebar"
     );
+  };
 
-    const label = toggle.querySelector(".toggle-label");
-    if (label) {
-      label.textContent = collapsed ? "" : "";
+  updateToggle(isCollapsed);
+
+  // Avoid registering duplicate event listeners
+  if (sidebar.dataset.initialized === "true") return;
+  sidebar.dataset.initialized = "true";
+
+  // Toggle button: expand or collapse
+  toggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    const collapsed = sidebar.classList.toggle("collapsed");
+
+    sessionStorage.setItem(storageKey, String(collapsed));
+    updateToggle(collapsed);
+  });
+
+  // Clicking elsewhere on the sidebar only expands it
+  sidebar.addEventListener("click", (event) => {
+    if (event.target.closest("#sidebar-toggle")) return;
+
+    if (sidebar.classList.contains("collapsed")) {
+      sidebar.classList.remove("collapsed");
+
+      sessionStorage.setItem(storageKey, "false");
+      updateToggle(false);
     }
   });
+};
+
+// Initialize on page load
+initializeSidebar();
+
+// Reinitialize after Astro client-side navigation
+document.addEventListener("astro:page-load", initializeSidebar);
 </script>
+
+
 
 <style>
 
-
 .sidebar {
-  flex: 0 0 300px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
   width: 300px;
-  min-width: 0;
-  min-height: 100vh;
-  box-sizing: border-box;
+  height: 100%;
+  min-height: 100%;
   margin: 0;
+  overflow: hidden;
+  overflow-y: hidden;
   overflow-x: hidden;
+  box-sizing: border-box;
   background-color: aliceblue;
-  transition: flex-basis 0.2s ease-in-out, background-color 0.2s ease;
+  transition: width 0.2s ease-in-out;
 }
 
 .sidebar.collapsed {
-  flex-basis: 44px;
   width: 44px;
-  transition: flex-basis 0.2s ease-in-out, background-color 0.2s ease;
 }
 
 /* Navigation links */
@@ -183,7 +239,7 @@ for (const category of categories) {
   opacity: 0.8;
 }
 
-/* Sidebar toggle button */
+/* Sidebar toggle */
 .sidebar-toggle {
   display: flex;
   align-items: center;
@@ -194,7 +250,6 @@ for (const category of categories) {
   padding: 0 10px;
   margin-bottom: 12px;
   box-sizing: border-box;
-
   background: transparent;
   border: none;
   border-radius: 6px;
@@ -213,16 +268,14 @@ for (const category of categories) {
 }
 
 .toggle-icon {
-  font-size: 1.2rem;
-  line-height: 1;
-}
-.toggle-icon {
   display: flex;
+  flex: 0 0 24px;
   align-items: center;
   justify-content: center;
-  flex: 0 0 24px;
   width: 24px;
   height: 24px;
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 /* Collapsed state */
@@ -231,23 +284,13 @@ for (const category of categories) {
   opacity: 0;
   pointer-events: none;
   transition: none;
-  /* transition: opacity 0.05s ease 0.05s; */
 }
 
-/* Restore text after expanding */
+/* Expanded state */
 .sidebar:not(.collapsed) .category-heading,
 .sidebar:not(.collapsed) .subcategory-list {
   transition: opacity 0.2s ease 0.1s;
 }
 
-.sidebar.collapsed .toggle-label {
-  opacity: 1;
-}
-
-.sidebar.collapsed .sidebar-toggle {
-  justify-content: flex-start;
-  padding: 0 10px;
-  gap: 10px;
-}
 
 </style>

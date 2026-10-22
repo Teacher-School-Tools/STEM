@@ -1,23 +1,20 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import HeaderDropdown from '../components/HeaderDropdown.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { MainLayout } from '../../components/MainLayout.astro';
-import Sidebar from '../components/Sidebar.astro';
+import MainLayout from '../layouts/MainLayout.astro';
 const base = import.meta.env.BASE_URL;
 ---
 
 <!doctype html>
 <html lang="en">
+	<MainLayout>
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
 		<!-- <Header /> -->
-		<HeaderDropdown/>
-		<Sidebar/>
+		<!-- <HeaderDropdown/> -->
+		<!-- <Sidebar/> -->
 		<main>
 
 			<h1>Welcome to SCH3U!</h1>
@@ -30,21 +27,24 @@ const base = import.meta.env.BASE_URL;
 			<p>
 				The content covered in this website is as follows:
 			</p>
-			<h3><a href=`..${base}/Chemical Reactions``>Chemical Reactions</a></h3>
-			<p>Chemical Reactions content covered</p>
-			<h3><a href=`..${base}/Gases and Atmospheric Chemistry`>Gases and Atmospheric Chemistry</a></h3>
-			<p>Gases and Atmospheric Chemistry Content Covered</p>
-			<h3><a href=`..${base}/Matter & Chemical Trends & Chemical Bonding`>Matter, Trends & Bonding</a></h3>
+			<h3><a href=`..${base}/01-Matter & Trends & Bonding`>Matter, Trends & Bonding</a></h3>
 			<p>Matter content</p>
-			<h3><a href=`..${base}/Quantities in Chemical Reactions`>Quantities in Chemical Reactions</a></h3>
+			<h3><a href=`..${base}/02-Chemical Reactions``>Chemical Reactions</a></h3>
+			<p>Chemical Reactions content covered</p>
+			<h3><a href=`..${base}/03-Quantities in Chemical Reactions`>Quantities in Chemical Reactions</a></h3>
 			<p>Reactions content</p>
-			<h3><a href=`..${base}/Solutions and Solubility`>Solutions and Solubility</a></h3>
+			<h3><a href=`..${base}/04-Solutions and Solubility`>Solutions and Solubility</a></h3>
 			<p>Solutions and Solubility Content</p>
+			<h3><a href=`..${base}/05-Gases and Atmospheric Chemistry`>Gases and Atmospheric Chemistry</a></h3>
+			<p>Gases and Atmospheric Chemistry Content Covered</p>
+			
+			
+			
 			<!-- <p>
 				STEM Capstone, built by Caelan Baron, Justin Bishop, Andrew Breau, Dhruv Dhoum, and Ricky Fan.
 
 			</p> -->
 		</main>
-		<Footer />
 	</body>
+	</MainLayout>
 </html>

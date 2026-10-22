@@ -1,9 +1,9 @@
 ---
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
-import HeaderDropdown from '../../components/HeaderDropdown.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 import definitionsTable from "../../../definitionstable.txt?raw";
+import MainLayout from '../../layouts/MainLayout.astro';
 
 const htmlTable = definitionsTable
 	.trim()
@@ -14,15 +14,16 @@ const htmlTable = definitionsTable
 
 <!doctype html>
 <html lang="en">
+	<MainLayout>
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
-		<HeaderDropdown />
 		<main>
 			<h1>Definitions</h1>
                 <p set:html={htmlTable}></p>
 		</main>
 		<Footer />
 	</body>
+	</MainLayout>
 </html>

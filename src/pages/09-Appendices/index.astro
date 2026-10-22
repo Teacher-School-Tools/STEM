@@ -1,0 +1,29 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import HeaderDropdown from '../../components/HeaderDropdown.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import MainLayout from '../../layouts/MainLayout.astro';
+const base = import.meta.env.BASE_URL;
+
+---
+
+<!doctype html>
+<html lang="en">
+	<MainLayout>
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<main>
+
+			<h1>Appendices</h1>
+            <p>Navigate the various additional webpages here.</p>
+            <h2><a href=`/Appendices/definitions`>Definitions</a></h2>
+            <p>All definitions can be found here.</p>
+            <h2><a href=`/Appendices/references`>References</a></h2>
+            <p>All references can be found here.</p>
+		</main>
+	</body>
+	</MainLayout>
+</html>

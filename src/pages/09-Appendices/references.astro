@@ -3,15 +3,16 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import HeaderDropdown from '../../components/HeaderDropdown.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import MainLayout from '../../layouts/MainLayout.astro';
 ---
 
 <!doctype html>
 <html lang="en">
+	<MainLayout>
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
-		<HeaderDropdown />
 		<main>
 			<h1>References</h1>
 			<h2><a href="../../Block 1/">Block 1</a></h2>
@@ -25,6 +26,6 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 			<h2><a href="../../Block 5/">Block 5</a></h2>
 			<p></p>
 		</main>
-		<Footer />
 	</body>
+	</MainLayout>
 </html>
