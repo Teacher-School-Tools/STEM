@@ -11,10 +11,9 @@ The website has individual sections created by each group member, with credits a
 
 | Section | Author |
 |-|-|
-| Block 1 | TEMP |
-| Block 2 | TEMP |
-| Block 3 | TEMP |
-| Block 4 | TEMP |
-| Block 5 | TEMP |
+| Matter & Trends & Bonding | Ricky F. |
+| Chemical Reactions | Andrew B. |
+| Quantities | Caelan B. |
+| Solutions & Solubility | Dhruv D. |
+| Gases & Atmospheric Chemistry | Justin B. |
 | Appendices | Ricky F. |
-| About Us | Ricky F. |
