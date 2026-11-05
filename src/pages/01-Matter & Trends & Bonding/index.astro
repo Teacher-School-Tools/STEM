@@ -4,6 +4,8 @@ import Footer from '../../components/Footer.astro';
 import HeaderDropdown from '../../components/HeaderDropdown.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 import MainLayout from '../../layouts/MainLayout.astro';
+
+const currentPath = Astro.url.pathname;
 const base = import.meta.env.BASE_URL;
 ---
 
@@ -21,7 +23,7 @@ const base = import.meta.env.BASE_URL;
 				 the suggested lesson plan order, the implications of __, and recommendations.
 				
 			</p>
-			<h2><a href=`${base}/Curriculum Expectations`>Curriculum Expectations</a></h2>
+			<h2><a href=`${currentPath}curriculum expectations`>Curriculum Expectations</a></h2>
 		</main>
 	</body>
 	</MainLayout>

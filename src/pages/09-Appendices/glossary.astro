@@ -1,0 +1,175 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import definitionsTable from "../../../definitionstable.txt?raw";
+import MainLayout from '../../layouts/MainLayout.astro';
+import glossaryText from '../../components/glossary.txt?raw';
+
+
+// Parse glossary entries
+const glossaryEntries = glossaryText
+    .split(/\r?\n/)
+    .filter(line => line.trim() !== "")
+    .map(line => {
+        const separatorIndex = line.indexOf("|");
+
+        if (separatorIndex === -1) return null;
+
+        return {
+            term: line.substring(0, separatorIndex).trim(),
+            definition: line.substring(separatorIndex + 1).trim()
+        };
+    })
+    .filter(entry => entry !== null)
+    .sort((a, b) => a.term.localeCompare(b.term, undefined, {
+        sensitivity: "base"
+    }));
+
+const htmlTable = definitionsTable
+	.trim()
+	.split(/\n\s*\n/)
+	.map(paragraph=>`<p>${paragraph.replace(/\n/g," ")}</p>`)
+	.join("\n");
+---
+
+<!doctype html>
+<html lang="en">
+<MainLayout title="Glossary">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+    <div class="glossary-container">
+
+        <h1>Glossary</h1>
+
+        <table id="glossary-table">
+            <thead>
+                <tr>
+                    <th>Term</th>
+                    <th>Definition</th>
+                </tr>
+            </thead>
+
+            <tbody>
+    {glossaryEntries.map(entry => (
+        <tr id={entry.term.toLowerCase().replace(/\s+/g, "-")}>
+            <td>{entry.term}</td>
+            <td>{entry.definition}</td>
+        </tr>
+    ))}
+            </tbody>
+        </table>
+
+    </div>
+</MainLayout>
+</html>
+
+<script>
+    const fileInput = document.getElementById("text-file") as HTMLInputElement;
+    const tableBody = document.querySelector("#glossary-table tbody");
+
+    fileInput?.addEventListener("change", function () {
+
+        const file = fileInput.files?.[0];
+
+        if (!file || !tableBody) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+
+            const text = event.target?.result;
+
+            if (typeof text !== "string") return;
+
+            // Split file into individual lines
+            const lines = text.split(/\r?\n/);
+
+            // Clear existing table contents
+            tableBody.innerHTML = "";
+
+            lines.forEach(line => {
+
+                if (!line.trim()) return;
+
+                // Split each line into term and definition
+                const separatorIndex = line.indexOf("|");
+
+                if (separatorIndex === -1) return;
+
+                const term = line.substring(0, separatorIndex).trim();
+                const definition = line.substring(separatorIndex + 1).trim();
+
+                const row = document.createElement("tr");
+
+                const termCell = document.createElement("td");
+                const definitionCell = document.createElement("td");
+
+                // Use textContent to safely insert text
+                termCell.textContent = term;
+                definitionCell.textContent = definition;
+
+                row.appendChild(termCell);
+                row.appendChild(definitionCell);
+
+                tableBody.appendChild(row);
+            });
+
+            // Display message if no entries were found
+            if (tableBody.children.length === 0) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+
+                cell.colSpan = 2;
+                cell.textContent = "No glossary entries found.";
+
+                row.appendChild(cell);
+                tableBody.appendChild(row);
+            }
+        };
+
+        reader.readAsText(file);
+
+    });
+</script>
+
+<style>
+    .glossary-container {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .file-upload {
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    #glossary-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    #glossary-table th,
+    #glossary-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    #glossary-table th {
+        background-color: aliceblue;
+    }
+
+    #glossary-table td:first-child {
+        width: 25%;
+        font-weight: bold;
+    }
+
+    #glossary-table tbody tr:nth-child(even) {
+        background-color: #f8f8f8;
+    }
+</style>
