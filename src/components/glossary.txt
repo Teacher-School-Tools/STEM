@@ -9,3 +9,12 @@ atomic radius|a measure of the size of an atom
 effective nuclear charge|the net positive charge experienced by an electron in a multi-electron atom
 electronegativity|the tendency of an atom to attract shared electrons (or electron density) toward itself when part of a chemical bond
 chemical reactions|the process in which one or more substances (reactants) are transformed into one or more different substances (products) through the breaking and forming of chemical bonds
+ionic|relates to atoms or molecules that have gained or lost electrons, giving them a net electrical charge (known as ions)
+molecular|relates to a group of two or more atoms held together by chemical bonds
+isotopic abundance|the fraction or percentage of a specific isotope found naturally in a sample of a chemical element
+non-polar covalent|a chemical bond where two atoms share a pair of electrons equally
+polar covalent|a type of chemical bond where two atoms share electrons unequally because one atom has a stronger attraction for electrons than the other
+structural formulae|a graphic representation that shows how the atoms of a chemical compound are bonded and arranged in three-dimensional space
+binary|referring to having two components
+polyatomic compounds|a group of two or more atoms that are covalently bonded together, but the entire unit carries a net positive or negative charge rather than being neutral
+atomic number|the total number of protons found in the nucleus of an atom
