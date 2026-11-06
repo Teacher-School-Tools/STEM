@@ -120,9 +120,7 @@ function parseDescription(description: string) {
             .filter(([key]) => key !== "description")
             .map(([specificCode, description]) => (
               <li>
-                <strong>{specificCode}</strong> :
-
-                {parseDescription(description).map(segment =>
+                <strong>{specificCode}</strong> : {parseDescription(description).map(segment =>
                   segment.isTerm ? (
                     <GT
                       term={segment.text}
@@ -131,6 +129,8 @@ function parseDescription(description: string) {
                     segment.text
                   )
                 )}
+
+                
               </li>
             ))}
         </ul>
