@@ -1,0 +1,145 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import GT from "../components/GlossaryTerm.astro";
+import MainLayout from '../layouts/MainLayout.astro';
+import glossaryText from '../components/glossary.txt?raw';
+const currentPath = Astro.url.pathname;
+
+import course from "../components/curriculum_expectations.json"
+
+interface Props {
+    strandIn: string;
+}
+
+const { strandIn } = Astro.props;
+
+interface Expectation {
+    description: string;
+    [key: string]: string | Expectation;
+}
+
+interface Strand {
+    description: string;
+    [key: string]: string | Expectation;
+}
+
+const strand_all: Record<string, Strand> = course.strands;
+
+const strand = strand_all[strandIn];
+
+// Extract glossary terms
+const glossaryTerms = glossaryText
+  .split("\n")
+  .map(line => line.split("|")[0].trim())
+  .filter(term => term.length > 0);
+
+// Sort longest terms first to prioritize multi-word matches
+const sortedTerms = [...glossaryTerms].sort(
+  (a, b) => b.length - a.length
+);
+
+// Escape special regex characters
+const escapeRegex = (term: string) =>
+  term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// Create regex to identify glossary terms
+const glossaryRegex = sortedTerms.length
+  ? new RegExp(
+      `(?<![\\p{L}\\p{N}_])(${sortedTerms.map(escapeRegex).join("|")})(?![\\p{L}\\p{N}_])`,
+      "giu"
+    )
+  : null;
+
+// Split description into regular text and glossary terms
+function parseDescription(description: string) {
+  if (!glossaryRegex) {
+    return [{ text: description, isTerm: false }];
+  }
+
+  const segments = [];
+  let lastIndex = 0;
+
+  for (const match of description.matchAll(glossaryRegex)) {
+    const index = match.index!;
+
+    // Add text preceding the glossary term
+    if (index > lastIndex) {
+      segments.push({
+        text: description.slice(lastIndex, index),
+        isTerm: false
+      });
+    }
+
+    // Add glossary term
+    segments.push({
+      text: match[0],
+      isTerm: true
+    });
+
+    lastIndex = index + match[0].length;
+  }
+
+  // Add remaining text
+  if (lastIndex < description.length) {
+    segments.push({
+      text: description.slice(lastIndex),
+      isTerm: false
+    });
+  }
+
+  return segments;
+}
+---
+
+<!doctype html>
+<html lang="en">
+	<MainLayout>
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<main>
+			<h1>Curriculum Expectations</h1>
+			<p>
+				
+<div class="strand">
+  <h2>Category {strandIn}: {strand.description}</h2>
+
+  {Object.entries(strand)
+    .filter(([key]) => key !== "description")
+    .map(([expectationCode, expectation]) => (
+      <div class="expectation-group">
+
+        <h3>
+          {expectationCode} : {expectation.description}
+        </h3>
+
+        <ul>
+          {Object.entries(expectation)
+            .filter(([key]) => key !== "description")
+            .map(([specificCode, description]) => (
+              <li>
+                <strong>{specificCode}</strong> :
+
+                {parseDescription(description).map(segment =>
+                  segment.isTerm ? (
+                    <GT
+                      term={segment.text}
+                    />
+                  ):(
+                    segment.text
+                  )
+                )}
+              </li>
+            ))}
+        </ul>
+
+      </div>
+    ))}
+</div>
+			</p>
+		</main>
+	</body>
+	</MainLayout>
+</html>

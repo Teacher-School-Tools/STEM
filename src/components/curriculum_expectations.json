@@ -1,0 +1,160 @@
+{ 
+  "title": "SCH3U",
+  "strands": {
+      "A": {
+        "description": "Scientific Investigation Skills and Career Exploration",
+        "A1": {
+          "description": "demonstrate scientific investigation skills (related to both inquiry and research) in the four areas of skills (initiating and planning, performing and recording, analysing and interpreting, and communicating);",
+          "A1.1": "formulate relevant scientific questions about observed relationships, ideas, problems, or issues, make informed predictions, and/or formulate educated hypotheses to focus inquiries or research",
+          "A1.2": "select appropriate instruments (e.g., a balance, glassware, titration instruments) and materials (e.g., molecular model kits, solutions), and identify appropriate methods, techniques, and procedures, for each inquiry",
+          "A1.3": "identify and locate a variety of print and electronic sources that enable them to address research topics fully and appropriately",
+          "A1.4": "apply knowledge and understanding of safe laboratory practices and procedures when planning investigations by correctly interpreting Workplace Hazardous Materials Information System (WHMIS) symbols; by using appropriate techniques for handling and storing laboratory equipment and materials and disposing of laboratory materials; and by using appropriate personal protection (e.g., wearing safety goggles)",
+          "A1.5": "conduct inquiries, controlling relevant variables, adapting or extending procedures as required, and using appropriate materials and equipment safely, accurately, and effectively, to collect observations and data",
+          "A1.6": "compile accurate data from laboratory and other sources, and organize and record the data, using appropriate formats, including tables, flow charts, graphs, and/or diagrams",
+          "A1.7": "select, organize, and record relevant information on research topics from a variety of appropriate sources, including electronic, print, and/or human sources, using suitable formats and an accepted form of academic documentation",
+          "A1.8": "synthesize, analyse, interpret, and evaluate qualitative and quantitative data; solve problems involving quantitative data; determine whether the evidence supports or refutes the initial prediction or hypothesis and whether it is consistent with scientific theory; identify sources of bias and error; and suggest improvements to the inquiry to reduce the likelihood of error",
+          "A1.9": "analyse the information gathered from research sources for logic, accuracy, reliability, adequacy, and bias",
+          "A1.10": "draw conclusions based on inquiry results and research findings, and justify their conclusions with reference to scientific knowledge",
+          "A1.11": "communicate ideas, plans, procedures, results, and conclusions orally, in writing, and/or in electronic presentations, using appropriate language and a variety of formats (e.g., data tables, laboratory reports, presentations, debates, simulations, models)",
+          "A1.12": "use appropriate numeric, symbolic, and graphic modes of representation, and appropriate units of measurement (e.g., SI and imperial units)",
+          "A1.13": "express the results of any calculations involving data accurately and precisely, to the appropriate number of decimal places or significant figures"
+        },
+        "A2": {
+          "description": "identify and describe careers related to the fields of science under study, and describe the contributions of scientists, including Canadians, to those fields.",
+          "A2.1": "identify and describe a variety of careers related to the fields of science under study (e.g., pharmacist, forensic scientist, chemical engineer, food scientist, environmental chemist, occupational health and safety officer, water quality analyst, atmospheric scientist) and the education and training necessary for these careers",
+          "A2.2": "describe the contributions of scientists, including Canadians (e.g., Carol Ann Budd, Edgar Steacie, Raymond Lemieux, Louis Taillefer, F. Kenneth Hare), to the fields under study"
+        }
+      },
+      "B": {
+        "description": "Matter, Chemical Trends, and Chemical Bonding",
+        "B1": {
+          "description": "analyse the properties of commonly used chemical substances and their effects on human health and the environment, and propose ways to lessen their impact;",
+          "B1.1": "analyse, on the basis of research, the properties of a commonly used but potentially harmful chemical substance (e.g., fertilizer, pesticide, a household cleaning product, materials used in electronics and batteries) and how that substance affects the environment, and propose ways to lessen the harmfulness of the substance (e.g., by reducing the amount used, by modifying one of its chemical components) or identify alternative substances that could be used for the same purpose [IP, PR, AI, C]",
+          "B1.2": "evaluate the risks and benefits to human health of some commonly used chemical substances (e.g., chemical additives in foods; pharmaceuticals; cosmetics and perfumes; household cleaning products) [AI, C]"
+        },
+        "B2": {
+          "description": "investigate physical and chemical properties of elements and compounds, and use various methods to visually represent them;",
+          "B2.1": "use appropriate terminology related to chemical trends and chemical bonding, including, but not limited to: atomic radius, effective nuclear charge, electronegativity, ionization energy, and electron affinity [C]",
+          "B2.2": "analyse data related to the properties of elements within a period (e.g., ionization energy, atomic radius) to identify general trends in the periodic table [AI]",
+          "B2.3": "use an inquiry process to investigate the chemical reactions of elements (e.g., metals, non-metals) with other substances (e.g., oxygen, acids, water), and produce an activity series using the resulting data [PR, AI]",
+          "B2.4": "draw Lewis structures to represent the bonds in ionic and molecular compounds [PR, C]",
+          "B2.5": "predict the nature of a bond (e.g., non-polar covalent, polar covalent, ionic), using electronegativity values of atoms [AI]",
+          "B2.6": "build molecular models, and write structural formulae, for molecular compounds containing single and multiple bonds (e.g., CO2, H2O, C2H4), and for ionic crystalline structures (e.g., NaCl) [PR, AI, C]",
+          "B2.7": "write chemical formulae of binary and polyatomic compounds, including those with multiple valences, and name the compounds using the International Union of Pure and Applied Chemistry (IUPAC) nomenclature system [AI, C]"
+        },
+        "B3": {
+          "description": "demonstrate an understanding of periodic trends in the periodic table and how elements combine to form chemical bonds.",
+          "B3.1": "explain the relationship between the atomic number and the mass number of an element, and the difference between isotopes and radioisotopes of an element",
+          "B3.2": "explain the relationship between isotopic abundance of an element’s isotopes and the relative atomic mass of the element",
+          "B3.3": "state the periodic law, and explain how patterns in the electron arrangement and forces in atoms result in periodic trends (e.g., in atomic radius, ionization energy, electron affinity, electronegativity) in the periodic table",
+          "B3.4": "explain the differences between the formation of ionic bonds and the formation of covalent bonds",
+          "B3.5": "compare and contrast the physical properties of ionic and molecular compounds (e.g., NaCl and CH4; NaOH and H2O)"
+        }
+      },
+      "C": {
+        "description": "Chemical Reactions",
+        "C1": {
+          "description": "analyse chemical reactions used in a variety of applications, and assess their impact on society and the environment;",
+          "C1.1": "analyse, on the basis of research, chemical reactions used in various industrial processes (e.g., pulp and paper production, mining, chemical manufacturing) that can have an impact on the health and safety of local populations [IP, PR, AI, C]",
+          "C1.2": "assess the effectiveness of some applications of chemical reactions that are used to address social and environmental needs and problems [AI, C]"
+        },
+        "C2": {
+          "description": "investigate different types of chemical reactions;",
+          "C2.1": "use appropriate terminology related to chemical reactions, including, but not limited to: neutralization, precipitate, acidic, and basic [C]",
+          "C2.2": "write balanced chemical equations to represent synthesis, decomposition, single displacement, double displacement, and combustion reactions, using the IUPAC nomenclature system [PR, AI, C]",
+          "C2.3": "investigate synthesis, decomposition, single displacement, and double displacement reactions, by testing the products of each reaction (e.g., test for products such as gases, the presence of an acid, or the presence of a base) [PR, AI]",
+          "C2.4": "predict the products of different types of synthesis and decomposition reactions (e.g., synthesis reactions in which simple compounds are formed; synthesis reactions of metallic or non-metallic oxides with water; decomposition reactions, in which a chemical compound is separated into several compounds) [AI]",
+          "C2.5": "predict the products of single displacement reactions, using the metal activity series and the halogen series [AI]",
+          "C2.6": "predict the products of double displacement reactions (e.g., the formation of precipitates or gases; neutralization) [AI]",
+          "C2.7": "design an inquiry to demonstrate the difference between a complete and an incomplete combustion reaction [IP, C]",
+          "C2.8": "plan and conduct an inquiry to compare the properties of non-metal oxide solutions and metal oxide solutions (e.g., carbon dioxide reacts with water to make water acidic; magnesium oxide reacts with water to make water basic) [IP, PR, AI]",
+          "C2.9": "investigate neutralization reactions (e.g., neutralize a dilute solution of sodium hydroxide with a dilute solution of hydrochloric acid, and isolate the sodium chloride produced) [PR]",
+          "C2.10": "plan and conduct an inquiry to demonstrate a single displacement reaction, using elements from the metal activity series [IP, PR]"
+        },
+        "C3": {
+          "description": "demonstrate an understanding of the different types of chemical reactions.",
+          "C3.1": "identify various types of chemical reactions, including synthesis, decomposition, single displacement, double displacement, and combustion",
+          "C3.2": "explain the difference between a complete combustion reaction and an incomplete combustion reaction (e.g., complete and incomplete combustion of hydrocarbon fuels)",
+          "C3.3": "explain the chemical reactions that result in the formation of acids and bases from metal oxides and non-metal oxides (e.g., calcium oxide reacts with water to produce a basic solution; carbon dioxide reacts with water to produce an acidic solution)"
+        }
+      },
+      "D": {
+        "description": "Quantities in Chemical Reactions",
+        "D1": {
+          "description": "analyse processes in the home, the workplace, and the environmental sector that use chemical quantities and calculations, and assess the importance of quantitative accuracy in industrial chemical processes;",
+          "D1.1": "analyse processes in the home, the workplace, and the environmental sector that involve the use of chemical quantities and calculations (e.g., mixing household cleaning solutions, calculating chemotherapy doses, monitoring pollen counts) [AI, C]",
+          "D1.2": "assess, on the basis of research, the importance of quantitative accuracy in industrial chemical processes and the potential impact on the environment if quantitative accuracy is not observed [IP, PR, AI, C]"
+        },
+        "D2": {
+          "description": "investigate quantitative relationships in chemical reactions, and solve related problems;",
+          "D2.1": "use appropriate terminology related to quantities in chemical reactions, including, but not limited to: stoichiometry, percentage yield, limiting reagent, mole, and atomic mass [C]",
+          "D2.2": "conduct an inquiry to calculate the percentage composition of a compound (e.g., a hydrate) [PR, AI]",
+          "D2.3": "solve problems related to quantities in chemical reactions by performing calculations involving quantities in moles, number of particles, and atomic mass [AI]",
+          "D2.4": "determine the empirical formulae and molecular formulae of various chemical compounds, given molar masses and percentage composition or mass data [AI]",
+          "D2.5": "calculate the corresponding mass, or quantity in moles or molecules, for any given reactant or product in a balanced chemical equation as well as for any other reactant or product in the chemical reaction [AI]",
+          "D2.6": "solve problems related to quantities in chemical reactions by performing calculations involving percentage yield and limiting reagents [AI]",
+          "D2.7": "conduct an inquiry to determine the actual yield, theoretical yield, and percentage yield of the products of a chemical reaction (e.g., a chemical reaction between steel wool and copper(II) sulfate solution), assess the effectiveness of the procedure, and suggest sources of experimental error [PR, AI]"
+        },
+        "D3": {
+          "description": "demonstrate an understanding of the mole concept and its significance to the quantitative analysis of chemical reactions.",
+          "D3.1": "explain the law of definite proportions",
+          "D3.2": "describe the relationships between Avogadro’s number, the mole concept, and the molar mass of any given substance",
+          "D3.3": "explain the relationship between the empirical formula and the molecular formula of a chemical compound",
+          "D3.4": "explain the quantitative relationships expressed in a balanced chemical equation, using appropriate units of measure (e.g., moles, grams, atoms, ions, molecules)"
+        }
+      },
+      "E": {
+        "description": "Solutions and Solubility",
+        "E1": {
+          "description": "analyse the origins and effects of water pollution, and a variety of economic, social, and environmental issues related to drinking water;",
+          "E1.1": "analyse the origins and cumulative effects of pollutants that enter our water systems (e.g., landfill leachates, agricultural run-off, industrial effluents, chemical spills), and explain how these pollutants affect water quality [AI, C]",
+          "E1.2": "analyse economic, social, and environmental issues related to the distribution, purification, or use of drinking water (e.g., the impact on the environment of the use of bottled water) [AI, C]"
+        },
+        "E2": {
+          "description": "investigate qualitative and quantitative properties of solutions, and solve related problems;",
+          "E2.1": "use appropriate terminology related to aqueous solutions and solubility, including, but not limited to: concentration, solubility, precipitate, ionization, dissociation, pH, dilute, solute, and solvent [C]",
+          "E2.2": "solve problems related to the concentration of solutions by performing calculations involving moles, and express the results in various units (e.g., moles per litre, grams per 100 mL, parts per million or parts per billion, mass, volume per cent) [AI, C]",
+          "E2.3": "prepare solutions of a given concentration by dissolving a solid solute in a solvent or by diluting a concentrated solution [PR]",
+          "E2.4": "conduct an investigation to analyse qualitative and quantitative properties of solutions (e.g., perform a qualitative analysis of ions in a solution) [PR, AI]",
+          "E2.5": "write balanced net ionic equations to represent precipitation and neutralization reactions [AI, C]",
+          "E2.6": "use stoichiometry to solve problems involving solutions and solubility [AI]",
+          "E2.7": "determine the concentration of an acid or a base in a solution (e.g., the concentration of acetic acid in vinegar), using the acid–base titration technique [PR, AI]",
+          "E2.8": "conduct an investigation to determine the concentrations of pollutants in their local treated drinking water, and compare the results to commonly used guidelines and standards (e.g., provincial and federal standards) [PR, AI]"
+        },
+        "E3": {
+          "description": "demonstrate an understanding of qualitative and quantitative properties of solutions.",
+          "E3.1": "describe the properties of water (e.g., polarity, hydrogen bonding), and explain why these properties make water such a good solvent",
+          "E3.2": "explain the process of formation for solutions that are produced by dissolving ionic and molecular compounds (e.g., salt, oxygen) in water, and for solutions that are produced by dissolving non-polar solutes in non-polar solvents (e.g., grease in vegetable oil)",
+          "E3.3": "explain the effects of changes in temperature and pressure on the solubility of solids, liquids, and gases (e.g., explain how a change in temperature or atmospheric pressure affects the solubility of oxygen in lake water)",
+          "E3.4": "identify, using a solubility table, the formation of precipitates in aqueous solutions (e.g., the use of iron or aluminum compounds to precipitate and remove phosphorus from wastewater)",
+          "E3.5": "explain the Arrhenius theory of acids and bases",
+          "E3.6": "explain the difference between strong and weak acids, and between strong and weak bases, in terms of degree of ionization"
+        }
+      },
+      "F": {
+        "description": "Gases and Atmospheric Chemistry",
+        "F1": {
+          "description": "analyse the cumulative effects of human activities and technologies on air quality, and describe some Canadian initiatives to reduce air pollution, including ways to reduce their own carbon footprint;",
+          "F1.1": "analyse the effects on air quality of some technologies and human activities (e.g., smelting; driving gas-powered vehicles), including their own activities, and propose actions to reduce their personal carbon footprint [AI, C]",
+          "F1.2": "assess air quality conditions for a given Canadian location, using Environment Canada’s Air Quality Health Index, and report on some Canadian initiatives to improve air quality and reduce greenhouse gases (e.g., Ontario’s Drive Clean program to control vehicle emissions) [AI, C]"
+        },
+        "F2": {
+          "description": "investigate gas laws that explain the behaviour of gases, and solve related problems;",
+          "F2.1": "use appropriate terminology related to gases and atmospheric chemistry, including, but not limited to: standard temperature, standard pressure, molar volume, and ideal gas [C]",
+          "F2.2": "determine, through inquiry, the quantitative and graphical relationships between the pressure, volume, and temperature of a gas [PR, AI]",
+          "F2.3": "solve quantitative problems by performing calculations based on Boyle’s law, Charles’s law, Gay-Lussac’s law, the combined gas law, Dalton’s law of partial pressures, and the ideal gas law [AI]",
+          "F2.4": "use stoichiometry to solve problems related to chemical reactions involving gases (e.g., problems involving moles, number of atoms, number of molecules, mass, and volume) [AI]",
+          "F2.5": "determine, through inquiry, the molar volume or molar mass of a gas produced by a chemical reaction (e.g., the molar volume of hydrogen gas from the reaction of magnesium with hydrochloric acid) [PR, AI]"
+        },
+        "F3": {
+          "description": "demonstrate an understanding of the laws that explain the behaviour of gases.",
+          "F3.1": "identify the major and minor chemical components of Earth’s atmosphere",
+          "F3.2": "describe the different states of matter, and explain their differences in terms of the forces between atoms, molecules, and ions",
+          "F3.3": "use the kinetic molecular theory to explain the properties and behaviour of gases in terms of types and degrees of molecular motion",
+          "F3.4": "describe, for an ideal gas, the quantitative relationships that exist between the variables of pressure, volume, temperature, and amount of substance",
+          "F3.5": "explain Dalton’s law of partial pressures, Boyle’s law, Charles’s law, Gay-Lussac’s law, the combined gas law, and the ideal gas law",
+          "F3.6": "explain Avogadro’s hypothesis and how his contribution to the gas laws has increased our understanding of the chemical reactions of gases"
+        }
+      }
+    }
+}

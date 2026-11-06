@@ -3,3 +3,6 @@ test word|this is the test definition
 test word 4|this is the test definition4
 test word 3|this is the test definition3
 physical properties|any characteristic of matter that can be observed or measured without changing the chemical identity or composition of the substance
+isotopes|any of two or more species of atoms of the same chemical element that share the same number of protons
+radioisotopes|an atom with an unstable nucleus that spontaneously emits energy in the form of radiation
+electron affinity|the amount of energy released when an electron is added to a neutral atom or molecule in the gaseous state to form a negative ion
