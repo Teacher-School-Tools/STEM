@@ -1,11 +1,10 @@
-
 ---
 const currentPath = Astro.props.currentPath ?? "/";
 
 // Automatically discover every Astro page under src/pages/
 const pageFiles = Object.keys(
   import.meta.glob("../pages/**/*.astro")
-);
+).map((path) => path.replace(/\\/g, "/"));
 
 // Convert folder and file names into readable labels
 function formatName(name) {
@@ -14,6 +13,14 @@ function formatName(name) {
     .replace(/^\d+-/, "")
     .replace(/[-_]/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+// Natural alphanumeric sorting
+function naturalSort(a, b) {
+  return a.localeCompare(b, undefined, {
+    numeric: true,
+    sensitivity: "base",
+  });
 }
 
 // Ensure the base URL ends with exactly one slash
@@ -35,7 +42,6 @@ const categoryMap = new Map();
 
 for (const file of pageFiles) {
   const relativePath = file
-    .replace(/^.*\/pages\//, "")
     .replace(/^\.\.\/pages\//, "")
     .replace(/\.(astro|md|mdx)$/, "");
 
@@ -47,7 +53,6 @@ for (const file of pageFiles) {
   const folder = parts[0];
 
   if (!categoryMap.has(folder)) {
-    // Remove numeric prefix for the category's display name
     categoryMap.set(folder, {
       name: formatName(folder),
       href: `${base}${folder}/`,
@@ -63,16 +68,17 @@ for (const file of pageFiles) {
 
   const pageName = parts[parts.length - 1];
 
-  // Ignore index files in nested folders to avoid duplicate links
+  // Ignore index files in nested folders
   if (pageName === "index") continue;
 
   categoryMap.get(folder).pages.push({
+    filename: pageName,
     name: formatName(pageName),
     href: getHref(relativePath),
   });
 }
 
-// Sort categories by numeric prefix, then alphabetically
+// Sort categories by numeric prefix, then alphanumerically
 const categories = [...categoryMap.entries()]
   .sort(([folderA], [folderB]) => {
     const getOrder = (folder) => {
@@ -82,14 +88,16 @@ const categories = [...categoryMap.entries()]
 
     return (
       getOrder(folderA) - getOrder(folderB) ||
-      folderA.localeCompare(folderB)
+      naturalSort(folderA, folderB)
     );
   })
   .map(([, category]) => category);
 
-// Sort pages within each category alphabetically
+// Sort pages using original filenames
 for (const category of categories) {
-  category.pages.sort((a, b) => a.name.localeCompare(b.name));
+  category.pages.sort((a, b) =>
+    naturalSort(a.filename, b.filename)
+  );
 }
 ---
 
@@ -129,9 +137,6 @@ for (const category of categories) {
     ))}
   </nav>
 </aside>
-
-
-
 
 <script>
   const initializeSidebar = () => {

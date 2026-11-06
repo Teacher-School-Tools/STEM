@@ -31,24 +31,31 @@ const menus = categoryFolders.map((folder) => {
   const category = folder.replace(/^\d+-/, "");
 
   const resources = allPages
-    .filter((path) => {
-      const match = path.match(
-        /^\.\.\/pages\/([^/]+)\/([^/]+)\.astro$/
-      );
+  .filter((path) => {
+    const match = path.match(
+      /^\.\.\/pages\/([^/]+)\/([^/]+)\.astro$/
+    );
 
-      return match && match[1] === folder && match[2] !== "index";
-    })
-    .map((path) => {
-      const filename = path.split("/").pop().replace(/\.astro$/, "");
+    return match && match[1] === folder && match[2] !== "index";
+  })
+  .map((path) => {
+    const filename = path.split("/").pop()!.replace(/\.astro$/, "");
 
-      return {
-        name: filename
-          .replace(/-/g, " ")
-          .replace(/\b\w/g, (letter) => letter.toUpperCase()),
-        href: `/${folder}/${filename}/`,
-      };
+    return {
+      filename,
+      name: filename
+        .replace(/^\d+-/, "") // Remove numeric prefix
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, (letter) => letter.toUpperCase()),
+      href: `/${folder}/${filename}/`,
+    };
+  })
+  .sort((a, b) =>
+    a.filename.localeCompare(b.filename, undefined, {
+      numeric: true,
+      sensitivity: "base",
     })
-    .sort((a, b) => a.name.localeCompare(b.name));
+  );
 
   return {
     name: category

@@ -1,8 +1,11 @@
-test word 2|this is the test definition2
-test word|this is the test definition
-test word 4|this is the test definition4
-test word 3|this is the test definition3
 physical properties|any characteristic of matter that can be observed or measured without changing the chemical identity or composition of the substance
 isotopes|any of two or more species of atoms of the same chemical element that share the same number of protons
 radioisotopes|an atom with an unstable nucleus that spontaneously emits energy in the form of radiation
 electron affinity|the amount of energy released when an electron is added to a neutral atom or molecule in the gaseous state to form a negative ion
+crystalline structures|a highly ordered, repeating three-dimensional arrangement of atoms, ions, or molecules in a solid material
+Lewis structures|a simplified visual representation of valence electrons in a molecule
+ionization energy|the minimum energy required to remove the most loosely bound electron from an isolated gaseous atom, ion, or molecule
+atomic radius|a measure of the size of an atom
+effective nuclear charge|the net positive charge experienced by an electron in a multi-electron atom
+electronegativity|the tendency of an atom to attract shared electrons (or electron density) toward itself when part of a chemical bond
+chemical reactions|the process in which one or more substances (reactants) are transformed into one or more different substances (products) through the breaking and forming of chemical bonds
