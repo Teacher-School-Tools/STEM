@@ -18,3 +18,5 @@ structural formulae|a graphic representation that shows how the atoms of a chemi
 binary|referring to having two components
 polyatomic compounds|a group of two or more atoms that are covalently bonded together, but the entire unit carries a net positive or negative charge rather than being neutral
 atomic number|the total number of protons found in the nucleus of an atom
+activity series|a list of elements ranked in order of decreasing chemical reactivity
+covalent bonds|chemical bond formed when nonmetal atoms share valence electron pairs to achieve a stable, full outer electron shell

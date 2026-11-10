@@ -1,31 +1,337 @@
 ---
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import HeaderDropdown from '../../components/HeaderDropdown.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-import MainLayout from '../../layouts/MainLayout.astro';
+import MainLayout from "../../layouts/MainLayout.astro";
 ---
 
-<!doctype html>
-<html lang="en">
-	<MainLayout>
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<main>
-			<h1>References</h1>
-			<h2><a href="../../Block 1/">Block 1</a></h2>
-			<p></p>
-			<h2><a href="../../Block 2/">Block 2</a></h2>
-			<p></p>
-			<h2><a href="../../Block 3/">Block 3</a></h2>
-			<p></p>
-			<h2><a href="../../Block 4/">Block 4</a></h2>
-			<p></p>
-			<h2><a href="../../Block 5/">Block 5</a></h2>
-			<p></p>
-		</main>
-	</body>
-	</MainLayout>
-</html>
+<script>
+  import referencesData from "../../components/references.json";
+
+  const references = referencesData.references;
+
+  // Convert a name into APA initials
+  function formatInitials(given) {
+    if (!given) return "";
+
+    return given
+      .replace(/\./g, "")
+      .split(/[\s-]+/)
+      .filter(Boolean)
+      .map(name => name.charAt(0).toUpperCase() + ".")
+      .join(" ");
+  }
+
+  // Format an author according to APA 7
+  function formatAuthor(author) {
+    if (author.literal) return author.literal;
+
+    return `${author.family}, ${formatInitials(author.given)}`;
+  }
+
+  function formatAuthors(authors = []) {
+    if (!authors.length) return "";
+
+    const formatted = authors.map(formatAuthor);
+
+    if (formatted.length === 1) return formatted[0];
+
+    if (formatted.length === 2) {
+      return `${formatted[0]}, & ${formatted[1]}`;
+    }
+
+    if (formatted.length <= 20) {
+      return `${formatted.slice(0, -1).join(", ")}, & ${formatted.at(-1)}`;
+    }
+
+    // APA 7: 19 authors, ellipsis, and final author
+    return `${formatted.slice(0, 19).join(", ")}, . . . ${formatted.at(-1)}`;
+  }
+
+  // Format publication date
+  function formatDate(date) {
+    if (!date || !date.year) return "(n.d.)";
+
+    const months = [
+      "January", "February", "March", "April",
+      "May", "June", "July", "August",
+      "September", "October", "November", "December"
+    ];
+
+    if (date.month && date.day) {
+      return `(${date.year}, ${months[date.month - 1]} ${date.day})`;
+    }
+
+    if (date.month) {
+      return `(${date.year}, ${months[date.month - 1]})`;
+    }
+
+    return `(${date.year})`;
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[character]);
+  }
+
+  function italic(value) {
+    return `<em>${escapeHTML(value)}</em>`;
+  }
+
+  function formatEditors(editors = []) {
+    if (!editors.length) return "";
+
+    const names = editors.map(formatAuthor);
+    const formatted = names.length === 1
+      ? names[0]
+      : names.length === 2
+        ? `${names[0]} & ${names[1]}`
+        : `${names.slice(0, -1).join(", ")}, & ${names.at(-1)}`;
+
+    return `${formatted} (Ed${editors.length > 1 ? "s" : ""}.)`;
+  }
+
+  function formatReference(reference) {
+    const authors = formatAuthors(reference.authors);
+    const date = formatDate(reference.date);
+    const title = escapeHTML(reference.title ?? "");
+    const publisher = escapeHTML(reference.publisher ?? "");
+    const url = reference.doi || reference.url || "";
+
+    const link = url
+      ? ` ${escapeHTML(url)}`
+      : "";
+
+    const authorPrefix = authors ? `${authors} ` : "";
+    const datePart = `${date}.`;
+
+    switch (reference.type) {
+
+      case "journalArticle": {
+        const journal = italic(reference.containerTitle);
+        const volume = reference.volume
+          ? italic(reference.volume)
+          : "";
+        const issue = reference.issue
+          ? `(${escapeHTML(reference.issue)})`
+          : "";
+        const pages = reference.pages
+          ? `, ${escapeHTML(reference.pages)}`
+          : "";
+
+        return `${authorPrefix}${datePart} ${escapeHTML(reference.title)}. ${journal}${volume ? `, ${volume}` : ""}${issue}${pages}.${link}`;
+      }
+
+      case "book": {
+        const edition = reference.edition
+          ? ` (${escapeHTML(reference.edition)} ed.)`
+          : "";
+
+        return `${authorPrefix}${datePart} ${italic(reference.title)}${edition}. ${publisher}.${link}`;
+      }
+
+      case "webpage": {
+        const website = reference.containerTitle &&
+          reference.containerTitle !== authors
+          ? ` ${italic(reference.containerTitle)}.`
+          : "";
+
+        return `${authorPrefix}${datePart} ${italic(reference.title)}.${website}${link}`;
+      }
+
+      case "report": {
+        const number = reference.reportNumber
+          ? ` (${escapeHTML(reference.reportNumber)})`
+          : "";
+
+        return `${authorPrefix}${datePart} ${italic(reference.title)}${number}. ${publisher}.${link}`;
+      }
+
+      case "bookChapter": {
+        const editors = formatEditors(reference.editors);
+        const bookTitle = italic(reference.bookTitle ?? "");
+        const pages = reference.pages
+          ? ` (pp. ${escapeHTML(reference.pages)})`
+          : "";
+
+        return `${authorPrefix}${datePart} ${escapeHTML(reference.chapterTitle ?? reference.title)}. In ${editors}, ${bookTitle}${pages}. ${publisher}.${link}`;
+      }
+
+      case "dissertation": {
+        const institution = escapeHTML(reference.institution ?? "");
+        const degree = reference.degreeType ?? "Doctoral dissertation";
+
+        return `${authorPrefix}${datePart} ${italic(reference.title)} [${escapeHTML(degree)}, ${institution}].${link}`;
+      }
+
+      case "conferencePaper": {
+        return `${authorPrefix}${datePart} ${escapeHTML(reference.title)} [Conference presentation]. ${escapeHTML(reference.conferenceName ?? "")}.${link}`;
+      }
+
+      case "newspaperArticle": {
+        const newspaper = italic(reference.containerTitle ?? "");
+        const pages = reference.pages
+          ? `, ${escapeHTML(reference.pages)}`
+          : "";
+
+        return `${authorPrefix}${datePart} ${escapeHTML(reference.title)}. ${newspaper}${pages}.${link}`;
+      }
+
+      case "video": {
+        const publisherName = escapeHTML(reference.publisher ?? "");
+        return `${authorPrefix}${datePart} ${italic(reference.title)} [Video]. ${publisherName}.${link}`;
+      }
+
+      case "dataset": {
+        const version = reference.version
+          ? ` (Version ${escapeHTML(reference.version)})`
+          : "";
+
+        return `${authorPrefix}${datePart} ${italic(reference.title)} [Data set]${version}. ${publisher}.${link}`;
+      }
+
+      default:
+        return `${authorPrefix}${datePart} ${italic(reference.title)}.${link}`;
+    }
+  }
+
+  // Alphabetical ordering by author or title
+  function sortReferences(items) {
+    return [...items].sort((a, b) => {
+      const authorA = a.authors?.[0]?.family ||
+        a.authors?.[0]?.literal || a.title;
+      const authorB = b.authors?.[0]?.family ||
+        b.authors?.[0]?.literal || b.title;
+
+      return authorA.localeCompare(authorB);
+    });
+  }
+
+  // Get unique strands
+  const strands = [
+    ...new Set(references.map(reference => reference.strand).filter(Boolean))
+  ].sort();
+
+  const strandSelect = document.querySelector("#strand-filter");
+  const referenceList = document.querySelector("#reference-list");
+  const referenceCount = document.querySelector("#reference-count");
+  const copyButton = document.querySelector("#copy-references");
+
+  function renderReferences() {
+    const selectedStrand = strandSelect.value;
+
+    const filtered = selectedStrand === "all"
+      ? references
+      : references.filter(reference => reference.strand === selectedStrand);
+
+    const sorted = sortReferences(filtered);
+
+    referenceCount.textContent = `${sorted.length} reference${sorted.length === 1 ? "" : "s"}`;
+
+    referenceList.innerHTML = sorted.map(reference =>
+      `<p class="reference">${formatReference(reference)}</p>`
+    ).join("");
+
+    if (!sorted.length) {
+      referenceList.innerHTML = "<p>No references found for this strand.</p>";
+    }
+  }
+
+  // Populate strand filter
+  strands.forEach(strand => {
+    const option = document.createElement("option");
+    option.value = strand;
+    option.textContent = `Strand ${strand}`;
+    strandSelect.appendChild(option);
+  });
+
+  strandSelect.addEventListener("change", renderReferences);
+
+  // Copy formatted references
+  const originalButtonText = copyButton.textContent;
+
+copyButton.addEventListener("click", async () => {
+    const html = referenceList.innerHTML;
+    const plainText = referenceList.innerText;
+
+    try {
+        await navigator.clipboard.write([
+            new ClipboardItem({
+                "text/html": new Blob([html], { type: "text/html" }),
+                "text/plain": new Blob([plainText], { type: "text/plain" })
+            })
+        ]);
+
+        copyButton.textContent = "Copied!";
+    } catch {
+        await navigator.clipboard.writeText(plainText);
+        copyButton.textContent = "Copied as plain text!";
+    }
+
+    setTimeout(() => {
+        copyButton.textContent = originalButtonText;
+    }, 1000);
+});
+
+  renderReferences();
+</script>
+
+<MainLayout>
+  <div class="references-page">
+    <header>
+      <h1>References</h1>
+    </header>
+
+    <section class="controls">
+      <div class="filter">
+        <label for="strand-filter">Filter by strand:</label>
+        <select id="strand-filter">
+          <option value="all">All Strands</option>
+        </select>
+      </div>
+
+      <div class="reference-actions">
+        <span id="reference-count"></span>
+        <button id="copy-references">Copy References</button>
+      </div>
+    </section>
+
+    <section id="reference-list" aria-live="polite">
+      <p>Loading references...</p>
+    </section>
+  </div>
+</MainLayout>
+
+<style>
+.references-page {
+    margin-inline: auto;
+    padding: 2rem 0;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+.filter,
+.reference-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.reference {
+    margin-bottom: 1rem;
+    padding-left: 0.5in;
+    text-indent: -0.5in;
+    overflow-wrap: anywhere;
+    line-height: 2;
+}
+</style>

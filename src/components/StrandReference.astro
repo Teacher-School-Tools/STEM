@@ -1,0 +1,158 @@
+---
+import referencesData from "./references.json";
+import MainLayout from "../layouts/MainLayout.astro";
+
+interface Props {
+  strand: string;
+}
+
+const { strand } = Astro.props;
+
+const references = referencesData.references.filter(
+  reference => reference.strand === strand
+);
+
+// Format author initials
+function formatInitials(given: string = "") {
+  return given
+    .replace(/\./g, "")
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .map(name => name.charAt(0).toUpperCase() + ".")
+    .join(" ");
+}
+
+function formatAuthor(author: any) {
+  if (author.literal) return author.literal;
+  return `${author.family}, ${formatInitials(author.given)}`;
+}
+
+function formatAuthors(authors: any[] = []) {
+  const formatted = authors.map(formatAuthor);
+
+  if (formatted.length <= 1) return formatted[0] ?? "";
+  if (formatted.length === 2) {
+    return `${formatted[0]}, & ${formatted[1]}`;
+  }
+  if (formatted.length <= 20) {
+    return `${formatted.slice(0, -1).join(", ")}, & ${formatted.at(-1)}`;
+  }
+
+  return `${formatted.slice(0, 19).join(", ")}, . . . ${formatted.at(-1)}`;
+}
+
+function formatDate(date: any) {
+  if (!date?.year) return "(n.d.)";
+
+  const months = [
+    "January", "February", "March", "April",
+    "May", "June", "July", "August",
+    "September", "October", "November", "December"
+  ];
+
+  if (date.month && date.day) {
+    return `(${date.year}, ${months[date.month - 1]} ${date.day})`;
+  }
+  if (date.month) {
+    return `(${date.year}, ${months[date.month - 1]})`;
+  }
+
+  return `(${date.year})`;
+}
+
+function escapeHTML(value: any) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]!);
+}
+
+function italic(value: string = "") {
+  return `<em>${escapeHTML(value)}</em>`;
+}
+
+function formatReference(reference: any) {
+  const authors = formatAuthors(reference.authors);
+  const date = formatDate(reference.date);
+  const authorPrefix = authors ? `${escapeHTML(authors)} ` : "";
+  const datePart = `${date}.`;
+  const title = escapeHTML(reference.title);
+  const publisher = escapeHTML(reference.publisher);
+  const url = reference.doi || reference.url;
+  const link = url ? ` ${escapeHTML(url)}` : "";
+
+  switch (reference.type) {
+    case "journalArticle":
+      return `${authorPrefix}${datePart} ${title}. ${italic(reference.containerTitle)}, ${italic(reference.volume ?? "")}${reference.issue ? `(${escapeHTML(reference.issue)})` : ""}${reference.pages ? `, ${escapeHTML(reference.pages)}` : ""}.${link}`;
+
+    case "book":
+      return `${authorPrefix}${datePart} ${italic(reference.title)}${reference.edition ? ` (${escapeHTML(reference.edition)} ed.)` : ""}. ${publisher}.${link}`;
+
+    case "webpage":
+      return `${authorPrefix}${datePart} ${italic(reference.title)}.${reference.containerTitle ? ` ${italic(reference.containerTitle)}.` : ""}${link}`;
+
+    case "report":
+      return `${authorPrefix}${datePart} ${italic(reference.title)}${reference.reportNumber ? ` (${escapeHTML(reference.reportNumber)})` : ""}. ${publisher}.${link}`;
+
+    case "bookChapter": {
+      const editors = (reference.editors ?? []).map(formatAuthor).join(", ");
+      return `${authorPrefix}${datePart} ${escapeHTML(reference.chapterTitle ?? reference.title)}. In ${escapeHTML(editors)} (Ed.), ${italic(reference.bookTitle ?? "")}${reference.pages ? ` (pp. ${escapeHTML(reference.pages)})` : ""}. ${publisher}.${link}`;
+    }
+
+    case "dissertation":
+      return `${authorPrefix}${datePart} ${italic(reference.title)} [${escapeHTML(reference.degreeType ?? "Doctoral dissertation")}, ${escapeHTML(reference.institution ?? "")}].${link}`;
+
+    case "conferencePaper":
+      return `${authorPrefix}${datePart} ${title} [Conference presentation]. ${escapeHTML(reference.conferenceName ?? "")}.${link}`;
+
+    case "newspaperArticle":
+      return `${authorPrefix}${datePart} ${title}. ${italic(reference.containerTitle ?? "")}${reference.pages ? `, ${escapeHTML(reference.pages)}` : ""}.${link}`;
+
+    case "video":
+      return `${authorPrefix}${datePart} ${italic(reference.title)} [Video]. ${publisher}.${link}`;
+
+    case "dataset":
+      return `${authorPrefix}${datePart} ${italic(reference.title)} [Data set]${reference.version ? ` (Version ${escapeHTML(reference.version)})` : ""}. ${publisher}.${link}`;
+
+    default:
+      return `${authorPrefix}${datePart} ${italic(reference.title)}.${link}`;
+  }
+}
+
+const sortedReferences = [...references].sort((a, b) => {
+  const authorA = a.authors?.[0]?.family ||
+    a.authors?.[0]?.literal || a.title;
+
+  const authorB = b.authors?.[0]?.family ||
+    b.authors?.[0]?.literal || b.title;
+
+  return authorA.localeCompare(authorB);
+});
+---
+<MainLayout>
+    <h1>References</h1>
+<div class="strand-references">
+  {sortedReferences.length > 0 ? (
+    sortedReferences.map(reference => (
+      <p class="reference" set:html={formatReference(reference)} />
+    ))
+  ) : (
+    <p>No references found for Strand {strand}.</p>
+  )}
+</div>
+</MainLayout>
+<style>
+  .strand-references {
+    line-height: 2;
+  }
+
+  .reference {
+    margin-bottom: 1rem;
+    padding-left: 0.5in;
+    text-indent: -0.5in;
+    overflow-wrap: anywhere;
+  }
+</style>

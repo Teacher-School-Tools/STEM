@@ -1,0 +1,57 @@
+
+{
+  "references": [
+    {
+      "id": "ref001",
+      "strand": "B",
+      "type": "journalArticle",
+      "authors": [
+        {
+          "family": "Smith",
+          "given": "John A."
+        }
+      ],
+      "date": {
+        "year": 2024,
+        "month": 5,
+        "day": 12
+      },
+      "title": "The impact of inquiry-based learning in science education",
+      "containerTitle": "Journal of Science Education",
+      "volume": "45",
+      "issue": "2",
+      "pages": "120-135",
+      "publisher": null,
+      "edition": null,
+      "doi": "https://doi.org/10.1234/example.2024",
+      "url": null,
+      "retrievalDate": null
+    },
+    {
+      "id": "ref002",
+      "strand": "C",
+      "type": "book",
+      "authors": [
+        {
+          "family": "Johnson",
+          "given": "Michael"
+        }
+      ],
+      "date": {
+        "year": 2022,
+        "month": null,
+        "day": null
+      },
+      "title": "Teaching science through exploration",
+      "containerTitle": null,
+      "volume": null,
+      "issue": null,
+      "pages": null,
+      "publisher": "Academic Press",
+      "edition": "2nd",
+      "doi": null,
+      "url": null,
+      "retrievalDate": null
+    }
+  ]
+}
