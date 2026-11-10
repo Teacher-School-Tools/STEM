@@ -1,27 +1,7 @@
 ---
-import BaseHead from '../../components/BaseHead.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-import MainLayout from '../../layouts/MainLayout.astro';
-const base = import.meta.env.BASE_URL;
-const currentPath = Astro.url.pathname;
-
+import ContentGrabber from "../../components/ContentGrabber.astro";
 ---
 
-<!doctype html>
-<html lang="en">
-	<MainLayout>
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<main>
-			<h1>Appendices</h1>
-            <p>Navigate the various additional webpages here.</p>
-            <h2><a href=`${currentPath}glossary`>Glossary</a></h2>
-            <p>All definitions can be found here.</p>
-            <h2><a href=`${currentPath}references`>References</a></h2>
-            <p>All references can be found here.</p>
-		</main>
-	</body>
-	</MainLayout>
-</html>
+<ContentGrabber
+dirIn="/09-Appendices"
+frontDescription="This page contains all the links to the additional resources that do not belong to any specific strand."/>

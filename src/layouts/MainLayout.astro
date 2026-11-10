@@ -4,8 +4,20 @@ import Footer from "../components/Footer.astro";
 import HeaderDropdown from "../components/HeaderDropdown.astro";
 import "../styles/global.css"
 
-const { title = "STEM Capstone" } = Astro.props;
+const { title = "SCH3U Curriculum Resources" } = Astro.props;
 ---
+
+<script is:inline>
+  (() => {
+    const isCollapsed =
+      localStorage.getItem("sidebar-collapsed") === "true";
+
+    document.documentElement.classList.toggle(
+      "sidebar-initially-collapsed",
+      isCollapsed
+    );
+  })();
+</script>
 
 <!doctype html>
 <html lang="en">

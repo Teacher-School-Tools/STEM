@@ -139,64 +139,39 @@ for (const category of categories) {
 </aside>
 
 <script>
-  const initializeSidebar = () => {
-  const sidebar = document.querySelector("#sidebar");
-  const toggle = document.querySelector("#sidebar-toggle");
+  const STORAGE_KEY = "sidebar-collapsed";
 
-  if (!sidebar || !toggle) return;
+  function applySidebarState() {
+    const sidebar = document.querySelector(".sidebar");
+    if (!sidebar) return;
 
-  const storageKey = "sidebar-collapsed";
+    const isCollapsed = localStorage.getItem(STORAGE_KEY) === "true";
 
-  // Restore the saved sidebar state
-  const isCollapsed = sessionStorage.getItem(storageKey) === "true";
+    sidebar.classList.toggle("collapsed", isCollapsed);
+  }
 
-  sidebar.classList.toggle("collapsed", isCollapsed);
+  // Apply saved state on page load
+  applySidebarState();
 
-  const updateToggle = (collapsed) => {
-    toggle.setAttribute("aria-expanded", String(!collapsed));
-    toggle.setAttribute(
-      "aria-label",
-      collapsed ? "Expand sidebar" : "Collapse sidebar"
+  // Toggle sidebar immediately when clicked
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement;
+
+    if (!target.closest(".sidebar-toggle")) return;
+
+    const sidebar = document.querySelector(".sidebar");
+    if (!sidebar) return;
+
+    // Toggle the actual sidebar state
+    sidebar.classList.toggle("collapsed");
+
+    // Save the new state
+    localStorage.setItem(
+      STORAGE_KEY,
+      String(sidebar.classList.contains("collapsed"))
     );
-  };
-
-  updateToggle(isCollapsed);
-
-  // Avoid registering duplicate event listeners
-  if (sidebar.dataset.initialized === "true") return;
-  sidebar.dataset.initialized = "true";
-
-  // Toggle button: expand or collapse
-  toggle.addEventListener("click", (event) => {
-    event.stopPropagation();
-
-    const collapsed = sidebar.classList.toggle("collapsed");
-
-    sessionStorage.setItem(storageKey, String(collapsed));
-    updateToggle(collapsed);
   });
-
-  // Clicking elsewhere on the sidebar only expands it
-  sidebar.addEventListener("click", (event) => {
-    if (event.target.closest("#sidebar-toggle")) return;
-
-    if (sidebar.classList.contains("collapsed")) {
-      sidebar.classList.remove("collapsed");
-
-      sessionStorage.setItem(storageKey, "false");
-      updateToggle(false);
-    }
-  });
-};
-
-// Initialize on page load
-initializeSidebar();
-
-// Reinitialize after Astro client-side navigation
-document.addEventListener("astro:page-load", initializeSidebar);
 </script>
-
-
 
 <style>
 

@@ -1,0 +1,109 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+const directoryName = decodeURIComponent(
+  Astro.url.pathname.split("/").filter(Boolean).at(-1) ?? ""
+)
+  .replace(/^\d+-/, "")
+  .replace(/[-_]/g, " ")
+  .replace(/\b\w/g, (char) => char.toUpperCase());
+
+interface Props {
+  dirIn: string;
+  frontDescription: string;
+}
+
+const { dirIn, frontDescription } = Astro.props;
+
+// Normalize directory path
+const directory = dirIn.replace(/\/$/, "");
+
+// Import all Astro page descriptions
+const allPages = import.meta.glob("../pages/**/*.astro", {
+  eager: true,
+  import: "description"
+});
+
+const pages = Object.entries(allPages)
+  // Only include pages in the requested directory
+  .filter(([path]) => {
+    const pageDir = path.substring(0, path.lastIndexOf("/"));
+    return pageDir === `../pages${directory}`;
+  })
+
+  // Exclude index.astro
+  .filter(([path]) => !path.endsWith("/index.astro"))
+
+  // Extract page information
+  .map(([path, description]) => {
+    const filename = path
+      .split("/")
+      .pop()
+      ?.replace(".astro", "") ?? "";
+
+    const title = filename
+      .replace(/^\d+-/, "")
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, char => char.toUpperCase());
+
+    return {
+      filename,
+      title,
+      href: `${directory}/${filename}`,
+      description: description ?? ""
+    };
+  })
+
+  // Sort alphanumerically
+  .sort((a, b) =>
+    a.filename.localeCompare(b.filename, undefined, {
+      numeric: true,
+      sensitivity: "base"
+    })
+  );
+---
+
+<MainLayout>
+  <h1>{directoryName} Pages</h1>
+  <p>{frontDescription}</p>
+  <div class="page-list">
+    {pages.map((page) => (
+      <div class="page-item">
+        <h2>
+          <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}${page.href}/`}>
+            {page.title}
+          </a>
+        </h2>
+
+        <p>{page.description}</p>
+      </div>
+    ))}
+  </div>
+</MainLayout>
+
+<style>
+  .page-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .page-item {
+    padding: 0.75rem 1rem;
+    border-left: 3px solid #ccc;
+  }
+
+  .page-item a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .page-item a:hover {
+    text-decoration: underline;
+  }
+
+  .page-item p {
+    margin: 0.25rem 0 0;
+    color: #666;
+    font-size: 0.9rem;
+  }
+</style>

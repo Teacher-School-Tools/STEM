@@ -1,24 +1,5 @@
 ---
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import HeaderDropdown from '../../components/HeaderDropdown.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-import MainLayout from '../../layouts/MainLayout.astro';
+import ContentGrabber from "../../components/ContentGrabber.astro";
 ---
+<ContentGrabber dirIn="/03-Quantities"/>
 
-<!doctype html>
-<html lang="en">
-	<MainLayout>
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<main>
-			<h1>Landing Page</h1>
-			<p>
-				caelan
-			</p>
-		</main>
-	</body>
-	</MainLayout>
-</html>
