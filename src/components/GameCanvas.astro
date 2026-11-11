@@ -1,0 +1,163 @@
+---
+interface Props {
+    gameName: string;
+    gameDir: string;
+}
+
+const { gameName, gameDir } = Astro.props;
+
+interface Props {
+    gameDirectory: string;
+}
+
+---
+<h1>{gameName}</h1>
+
+<div class="game-container">
+
+    <div class="game-header">
+        <p>Use the arrow keys or WASD to move.</p>
+    </div>
+
+    <div class="temperature-control">
+
+    <label for="temperature">
+        Temperature : <span id="temperatureValue">298 K</span>
+    </label>
+    <p/>
+    <input
+        type="range"
+        id="temperature"
+        min="0"
+        max="500"
+        value="298"
+        step="1"
+    />
+
+    </div>
+    <canvas
+        id="gameCanvas"
+        width="600"
+        height="400"
+        tabindex="0"
+    ></canvas>
+
+    <div class="game-controls">
+        <button id="startGame">Start</button>
+        <button id="pauseGame">Pause</button>
+        <button id="restartGame">Restart</button>
+    </div>
+
+</div>
+
+<script>
+    import Game from
+        "../game/projects/CollectionGame.js";
+
+    const canvas = document.querySelector(
+        "#gameCanvas"
+    );
+
+    const startButton = document.querySelector(
+        "#startGame"
+    );
+
+    const pauseButton = document.querySelector(
+        "#pauseGame"
+    );
+
+    const restartButton = document.querySelector(
+        "#restartGame"
+    );
+
+    if (
+        canvas instanceof HTMLCanvasElement &&
+        startButton &&
+        pauseButton &&
+        restartButton
+    ) {
+
+        const game = new Game(canvas);
+
+        const slider = document.querySelector(
+        "#temperature"
+    );
+
+    const temperatureValue = document.querySelector(
+        "#temperatureValue"
+    );
+
+    if (
+        slider instanceof HTMLInputElement &&
+        temperatureValue
+    ) {
+
+        slider.addEventListener("input", () => {
+
+            const temperature = Number(slider.value);
+
+            temperatureValue.textContent =
+                `${temperature} °C`;
+
+            game.setTemperature(temperature);
+
+        });
+
+    }
+
+        canvas.addEventListener("click", () => {
+            canvas.focus();
+        });
+
+        startButton.addEventListener("click", () => {
+            if (!game.running) {
+                game.start();
+                canvas.focus();
+            }
+        });
+
+        pauseButton.addEventListener("click", () => {
+            if (game.state === "playing") {
+                game.pause();
+            } else if (game.state === "paused") {
+                game.resume();
+            }
+            canvas.focus();
+        });
+
+        restartButton.addEventListener("click", () => {
+            game.restart();
+            canvas.focus();
+        });
+
+    }
+</script>
+
+<style>
+    .game-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        text-align: center;
+    }
+
+    canvas {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 2px solid #333;
+        background: #f5f5f5;
+        margin: auto;
+    }
+
+    .game-controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    button {
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+</style>
