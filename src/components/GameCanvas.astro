@@ -6,10 +6,6 @@ interface Props {
 
 const { gameName, gameDir } = Astro.props;
 
-interface Props {
-    gameDirectory: string;
-}
-
 ---
 <h1>{gameName}</h1>
 
@@ -34,6 +30,21 @@ interface Props {
         step="1"
     />
 
+    <div class="collectible-control">
+    <label for="collectibleCount">
+        Number of Collectibles : <span id="collectibleCountValue">5</span>
+    </label>
+    <p/>
+    <input
+        type="range"
+        id="collectibleCount"
+        min="1"
+        max="20"
+        value="5"
+        step="1"
+    />
+    </div>
+
     </div>
     <canvas
         id="gameCanvas"
@@ -51,86 +62,88 @@ interface Props {
 </div>
 
 <script>
-    import Game from
-        "../game/projects/CollectionGame.js";
+    
+import Game from "../game/projects/CollectionGame.js";
 
-    const canvas = document.querySelector(
-        "#gameCanvas"
-    );
+const canvas = document.querySelector("#gameCanvas");
+const startButton = document.querySelector("#startGame");
+const pauseButton = document.querySelector("#pauseGame");
+const restartButton = document.querySelector("#restartGame");
 
-    const startButton = document.querySelector(
-        "#startGame"
-    );
+if (
+    canvas instanceof HTMLCanvasElement &&
+    startButton &&
+    pauseButton &&
+    restartButton
+) {
 
-    const pauseButton = document.querySelector(
-        "#pauseGame"
-    );
+    const game = new Game(canvas);
 
-    const restartButton = document.querySelector(
-        "#restartGame"
-    );
-
-    if (
-        canvas instanceof HTMLCanvasElement &&
-        startButton &&
-        pauseButton &&
-        restartButton
-    ) {
-
-        const game = new Game(canvas);
-
-        const slider = document.querySelector(
-        "#temperature"
-    );
-
-    const temperatureValue = document.querySelector(
-        "#temperatureValue"
-    );
+    // Temperature slider
+    const slider = document.querySelector("#temperature");
+    const temperatureValue = document.querySelector("#temperatureValue");
 
     if (
         slider instanceof HTMLInputElement &&
         temperatureValue
     ) {
-
         slider.addEventListener("input", () => {
-
             const temperature = Number(slider.value);
 
-            temperatureValue.textContent =
-                `${temperature} °C`;
+            temperatureValue.textContent = `${temperature} K`;
 
             game.setTemperature(temperature);
-
         });
-
     }
 
-        canvas.addEventListener("click", () => {
-            canvas.focus();
-        });
+    // Collectible count slider
+    const collectibleSlider = document.querySelector("#collectibleCount");
+    const collectibleValue = document.querySelector("#collectibleCountValue");
 
-        startButton.addEventListener("click", () => {
-            if (!game.running) {
-                game.start();
-                canvas.focus();
-            }
-        });
+    if (
+        collectibleSlider instanceof HTMLInputElement &&
+        collectibleValue
+    ) {
+        collectibleSlider.addEventListener("input", () => {
+            const count = Number(collectibleSlider.value);
 
-        pauseButton.addEventListener("click", () => {
-            if (game.state === "playing") {
-                game.pause();
-            } else if (game.state === "paused") {
-                game.resume();
-            }
-            canvas.focus();
-        });
+            collectibleValue.textContent = count;
 
-        restartButton.addEventListener("click", () => {
-            game.restart();
-            canvas.focus();
+            game.setCollectibleCount(count);
         });
-
     }
+
+    // Canvas focus
+    canvas.addEventListener("click", () => {
+        canvas.focus();
+    });
+
+    // Start
+    startButton.addEventListener("click", () => {
+        if (!game.running) {
+            game.start();
+            canvas.focus();
+        }
+    });
+
+    // Pause / Resume
+    pauseButton.addEventListener("click", () => {
+        if (game.state === "playing") {
+            game.pause();
+        } else if (game.state === "paused") {
+            game.resume();
+        }
+        canvas.focus();
+    });
+
+    // Restart
+    restartButton.addEventListener("click", () => {
+        game.restart();
+        canvas.focus();
+    });
+
+}
+
 </script>
 
 <style>
