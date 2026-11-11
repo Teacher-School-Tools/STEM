@@ -108,10 +108,14 @@ if (
         atomValue
     ) {
         Atomslider.addEventListener("input", () => {
-            const count = Number(Atomslider.value);
+    const count = Number(Atomslider.value);
 
-            game.setAtomCount(count);
-        });
+    // Update displayed HTML value
+    atomValue.textContent = count.toString();
+
+    // Update number of atoms in game
+    game.setAtomCount(count);
+});
     }
 
     // Canvas focus

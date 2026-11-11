@@ -27,7 +27,7 @@ export default class CollectionGame extends Game {
         // Atoms
         this.atoms = [];
         this.createAtoms(5);
-        this.scoreManager.value = 5000 * 5
+        this.scoreManager.add(5000 * this.atoms.length);
 
     }
 
@@ -59,7 +59,7 @@ export default class CollectionGame extends Game {
         this.moveAtoms(deltaTime);
         this.checkAtomCollisions();
         this.checkPlayerCollisions();
-        this.scoreManager.add(Math.round(1 *  (this.getTemperatureFactor() + 0.5)))
+        this.scoreManager.add(Math.round((1 + (this.getTemperatureFactor() + 0.3)) ** 2))
 
     }
 
@@ -84,58 +84,54 @@ export default class CollectionGame extends Game {
 
     createAtoms(number) {
 
-        for (let i = 0; i < number; i++) {
+    for (let i = 0; i < number; i++) {
 
-            const atom = new Entity(0, 0, 20, 20);
+        const atom = new Entity(0, 0, 20, 20);
 
-            atom.color = "orange";
+        atom.color = "orange";
 
-            atom.baseVelocityX = (Math.random() - 0.5) * 500;
-            atom.baseVelocityY = (Math.random() - 0.5) * 500;
+        atom.baseVelocityX = (Math.random() - 0.5) * 100;
+        atom.baseVelocityY = (Math.random() - 0.5) * 100;
 
-            atom.velocityX = atom.baseVelocityX;
-            atom.velocityY = atom.baseVelocityY;
+        atom.velocityX = atom.baseVelocityX;
+        atom.velocityY = atom.baseVelocityY;
 
-            // Draw atom as a circle
-            atom.draw = function(ctx) {
+        atom.draw = function(ctx) {
+            ctx.beginPath();
+            ctx.arc(
+                this.x + this.width / 2,
+                this.y + this.height / 2,
+                this.width / 2,
+                0,
+                Math.PI * 2
+            );
 
-                ctx.beginPath();
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        };
 
-                ctx.arc(
-                    this.x + this.width / 2,
-                    this.y + this.height / 2,
-                    this.width / 2,
-                    0,
-                    Math.PI * 2
-                );
-
-                ctx.fillStyle = this.color;
-                ctx.fill();
-
-            };
-
-            this.atoms.push(atom);
-            this.addEntity(atom);
-
-        }
-
-        this.resetAtoms();
-
+        this.atoms.push(atom);
+        this.addEntity(atom);
     }
+
+    this.resetAtoms();
+}
 
     setAtomCount(number) {
 
-        // Remove existing atoms
-        this.atoms.forEach(atom => {
-            this.removeEntity(atom);
-        });
+    this.atoms.forEach(atom => {
+        this.removeEntity(atom);
+    });
 
-        this.atoms = [];
+    this.atoms = [];
 
-        this.createAtoms(number);
-        this.scoreManager.value = 5000 * number
+    this.createAtoms(number);
 
-    }
+    // Reset score based on atom count
+    this.scoreManager.reset();
+    this.scoreManager.add(5000 * this.atoms.length);
+
+}
 
     resetAtoms() {
 
@@ -330,6 +326,7 @@ export default class CollectionGame extends Game {
 
         this.running = false;
         this.start();
+        this.scoreManager.add(5000 * this.atoms.length);
 
     }
 
