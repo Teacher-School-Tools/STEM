@@ -24,10 +24,10 @@ export default class CollectionGame extends Game {
             50, 50, 30, 30
         );
         
-        this.collectibles = [];
+        this.Atoms = [];
 
-        this.createCollectibles(5)
-        // Create collectible
+        this.createAtoms(5)
+        // Create atom
 
 
         this.addEntity(this.player);
@@ -60,23 +60,23 @@ export default class CollectionGame extends Game {
     // Update player
     this.player.update(deltaTime, this.canvas);
 
-    // Move collectibles
-    this.moveCollectibles(deltaTime);
+    // Move Atoms
+    this.moveAtoms(deltaTime);
 
-    this.checkCollectibleCollisions();
+    this.checkatomCollisions();
 
     // Check collisions
-    this.collectibles.forEach(collectible => {
+    this.Atoms.forEach(atom => {
 
-        if (Collision.check(this.player, collectible)) {
+        if (Collision.check(this.player, atom)) {
 
             this.scoreManager.add(50);
 
-            collectible.x = Math.random() *
-                (this.canvas.width - collectible.width);
+            atom.x = Math.random() *
+                (this.canvas.width - atom.width);
 
-            collectible.y = Math.random() *
-                (this.canvas.height - collectible.height);
+            atom.y = Math.random() *
+                (this.canvas.height - atom.height);
 
         }
 
@@ -84,23 +84,23 @@ export default class CollectionGame extends Game {
 
     }
 
-    moveCollectible() {
-    this.collectibles.forEach(collectible => {
+    moveatom() {
+    this.Atoms.forEach(atom => {
 
-        collectible.x = Math.random() *
-            (this.canvas.width - collectible.width);
+        atom.x = Math.random() *
+            (this.canvas.width - atom.width);
 
-        collectible.y = Math.random() *
-            (this.canvas.height - collectible.height);
+        atom.y = Math.random() *
+            (this.canvas.height - atom.height);
 
-        // Give each collectible a new random direction
-        collectible.velocityX = (Math.random() - 0.5) * 200;
-        collectible.velocityY = (Math.random() - 0.5) * 200;
+        // Give each atom a new random direction
+        atom.velocityX = (Math.random() - 0.5) * 200;
+        atom.velocityY = (Math.random() - 0.5) * 200;
 
     });
 }
 
-    moveCollectibles(deltaTime) {
+    moveAtoms(deltaTime) {
 
     const temperatureFactor =
         (this.temperature - this.minTemperature) /
@@ -108,54 +108,54 @@ export default class CollectionGame extends Game {
 
     const speedMultiplier = 0.5 + temperatureFactor * 2.5;
 
-    this.collectibles.forEach(collectible => {
+    this.Atoms.forEach(atom => {
 
         // Calculate temperature-dependent velocity
-        collectible.velocityX =
-            collectible.baseVelocityX * speedMultiplier;
+        atom.velocityX =
+            atom.baseVelocityX * speedMultiplier;
 
-        collectible.velocityY =
-            collectible.baseVelocityY * speedMultiplier;
+        atom.velocityY =
+            atom.baseVelocityY * speedMultiplier;
 
-        // Move collectible
-        collectible.x += collectible.velocityX * deltaTime;
-        collectible.y += collectible.velocityY * deltaTime;
+        // Move atom
+        atom.x += atom.velocityX * deltaTime;
+        atom.y += atom.velocityY * deltaTime;
 
         // Left wall
-        if (collectible.x < 0) {
-            collectible.x = 0;
-            collectible.baseVelocityX = Math.abs(collectible.baseVelocityX);
+        if (atom.x < 0) {
+            atom.x = 0;
+            atom.baseVelocityX = Math.abs(atom.baseVelocityX);
         }
 
         // Right wall
-        if (collectible.x + collectible.width > this.canvas.width) {
-            collectible.x = this.canvas.width - collectible.width;
-            collectible.baseVelocityX = -Math.abs(collectible.baseVelocityX);
+        if (atom.x + atom.width > this.canvas.width) {
+            atom.x = this.canvas.width - atom.width;
+            atom.baseVelocityX = -Math.abs(atom.baseVelocityX);
         }
 
         // Top wall
-        if (collectible.y < 0) {
-            collectible.y = 0;
-            collectible.baseVelocityY = Math.abs(collectible.baseVelocityY);
+        if (atom.y < 0) {
+            atom.y = 0;
+            atom.baseVelocityY = Math.abs(atom.baseVelocityY);
         }
 
         // Bottom wall
-        if (collectible.y + collectible.height > this.canvas.height) {
-            collectible.y = this.canvas.height - collectible.height;
-            collectible.baseVelocityY = -Math.abs(collectible.baseVelocityY);
+        if (atom.y + atom.height > this.canvas.height) {
+            atom.y = this.canvas.height - atom.height;
+            atom.baseVelocityY = -Math.abs(atom.baseVelocityY);
         }
 
     });
 }
 
-checkCollectibleCollisions() {
+checkatomCollisions() {
 
-    for (let i = 0; i < this.collectibles.length; i++) {
+    for (let i = 0; i < this.Atoms.length; i++) {
 
-        for (let j = i + 1; j < this.collectibles.length; j++) {
+        for (let j = i + 1; j < this.Atoms.length; j++) {
 
-            const a = this.collectibles[i];
-            const b = this.collectibles[j];
+            const a = this.Atoms[i];
+            const b = this.Atoms[j];
 
             // Calculate distance between circle centres
             const dx = (b.x + b.width / 2) - (a.x + a.width / 2);
@@ -211,38 +211,38 @@ checkCollectibleCollisions() {
 
 }
 
-setCollectibleCount(number) {
+setatomCount(number) {
 
-    // Remove existing collectibles from the game
-    this.collectibles.forEach(collectible => {
-        this.removeEntity(collectible);
+    // Remove existing Atoms from the game
+    this.Atoms.forEach(atom => {
+        this.removeEntity(atom);
     });
 
     // Clear the existing array
-    this.collectibles = [];
+    this.Atoms = [];
 
-    // Create the requested number of collectibles
-    this.createCollectibles(number);
+    // Create the requested number of Atoms
+    this.createAtoms(number);
 
 }
 
-    createCollectibles(number) {
+    createAtoms(number) {
     for (let i = 0; i < number; i++) {
-        const collectible = new Entity(0, 0, 20, 20);
-        collectible.color = "orange";
+        const atom = new Entity(0, 0, 20, 20);
+        atom.color = "orange";
 
         // Assign random movement
-        // collectible.baseVelocityX = (Math.random() - 0.5) * 200;
-        // collectible.baseVelocityY = (Math.random() - 0.5) * 200;
+        // atom.baseVelocityX = (Math.random() - 0.5) * 200;
+        // atom.baseVelocityY = (Math.random() - 0.5) * 200;
 
-        collectible.baseVelocityX = (Math.random() - 0.5) * 500;
-        collectible.baseVelocityY = (Math.random() - 0.5) * 500;
+        atom.baseVelocityX = (Math.random() - 0.5) * 500;
+        atom.baseVelocityY = (Math.random() - 0.5) * 500;
 
-        collectible.velocityX = collectible.baseVelocityX;
-        collectible.velocityY = collectible.baseVelocityY;
+        atom.velocityX = atom.baseVelocityX;
+        atom.velocityY = atom.baseVelocityY;
 
         // Draw as a circle
-        collectible.draw = function(ctx) {
+        atom.draw = function(ctx) {
         ctx.beginPath();
         ctx.arc(
             this.x + this.width / 2,
@@ -255,11 +255,11 @@ setCollectibleCount(number) {
         ctx.fill();
         };
 
-        this.collectibles.push(collectible);
-        this.addEntity(collectible);
+        this.Atoms.push(atom);
+        this.addEntity(atom);
     }
 
-    this.moveCollectible();
+    this.moveatom();
     }
 
     draw() {
@@ -285,7 +285,7 @@ setCollectibleCount(number) {
         this.player.x = 50;
         this.player.y = 50;
 
-        this.moveCollectible();
+        this.moveatom();
 
         this.running = false;
         this.start();

@@ -30,14 +30,14 @@ const { gameName, gameDir } = Astro.props;
         step="1"
     />
 
-    <div class="collectible-control">
-    <label for="collectibleCount">
-        Number of Collectibles : <span id="collectibleCountValue">5</span>
+    <div class="atom-control">
+    <label for="atomCount">
+        Number of Atoms : <span id="atomCountValue">5</span>
     </label>
     <p/>
     <input
         type="range"
-        id="collectibleCount"
+        id="atomCount"
         min="1"
         max="20"
         value="5"
@@ -96,20 +96,20 @@ if (
         });
     }
 
-    // Collectible count slider
-    const collectibleSlider = document.querySelector("#collectibleCount");
-    const collectibleValue = document.querySelector("#collectibleCountValue");
+    // atom count slider
+    const Atomslider = document.querySelector("#atomCount");
+    const atomValue = document.querySelector("#atomCountValue");
 
     if (
-        collectibleSlider instanceof HTMLInputElement &&
-        collectibleValue
+        Atomslider instanceof HTMLInputElement &&
+        atomValue
     ) {
-        collectibleSlider.addEventListener("input", () => {
-            const count = Number(collectibleSlider.value);
+        Atomslider.addEventListener("input", () => {
+            const count = Number(Atomslider.value);
 
-            collectibleValue.textContent = count;
+            atomValue.textContent = count;
 
-            game.setCollectibleCount(count);
+            game.setatomCount(count);
         });
     }
 
