@@ -9,83 +9,215 @@ import Score from "../core/Score.js";
 export default class CollectionGame extends Game {
 
     constructor(canvas) {
-
         super(canvas);
 
+        // Game systems
         this.input = new Input();
         this.scoreManager = new Score();
-        
+
+        // Temperature settings
         this.temperature = 20;
         this.minTemperature = 0;
         this.maxTemperature = 500;
 
-        // Create player
-        this.player = new Player(
-            50, 50, 30, 30
-        );
-        
-        this.Atoms = [];
-
-        this.createAtoms(5)
-        // Create atom
-
-
+        // Player
+        this.player = new Player(50, 50, 30, 30);
         this.addEntity(this.player);
 
+        // Atoms
+        this.atoms = [];
+        this.createAtoms(5);
     }
 
-    setTemperature(value) {
+    // -----------------------------------------
+    // Temperature
+    // -----------------------------------------
 
+    setTemperature(value) {
         this.temperature = Math.max(
             this.minTemperature,
             Math.min(this.maxTemperature, value)
         );
-
     }
+
+    getTemperatureFactor() {
+        return (
+            (this.temperature - this.minTemperature) /
+            (this.maxTemperature - this.minTemperature)
+        );
+    }
+
+    // -----------------------------------------
+    // Game Update
+    // -----------------------------------------
 
     update(deltaTime) {
 
-    const minSpeed = 100;
-    const maxSpeed = 500;
+        this.updatePlayer(deltaTime);
+        this.moveAtoms(deltaTime);
+        this.checkAtomCollisions();
+        this.checkPlayerCollisions();
 
-    const temperatureFactor =
-        (this.temperature - this.minTemperature) /
-        (this.maxTemperature - this.minTemperature);
+    }
 
-    this.player.speed =
-        minSpeed + temperatureFactor * (maxSpeed - minSpeed);
+    updatePlayer(deltaTime) {
 
-    this.player.handleInput(this.input);
+        const minSpeed = 100;
+        const maxSpeed = 500;
 
-    // Update player
-    this.player.update(deltaTime, this.canvas);
+        const factor = this.getTemperatureFactor();
 
-    // Move Atoms
-    this.moveAtoms(deltaTime);
+        this.player.speed =
+            minSpeed + factor * (maxSpeed - minSpeed);
 
-    this.checkatomCollisions();
+        this.player.handleInput(this.input);
+        this.player.update(deltaTime, this.canvas);
 
-    // Check collisions
-    this.Atoms.forEach(atom => {
+    }
 
-        if (Collision.check(this.player, atom)) {
+    // -----------------------------------------
+    // Atom Management
+    // -----------------------------------------
 
-            this.scoreManager.add(50);
+    createAtoms(number) {
 
+        for (let i = 0; i < number; i++) {
+
+            const atom = new Entity(0, 0, 20, 20);
+
+            atom.color = "orange";
+
+            atom.baseVelocityX = (Math.random() - 0.5) * 500;
+            atom.baseVelocityY = (Math.random() - 0.5) * 500;
+
+            atom.velocityX = atom.baseVelocityX;
+            atom.velocityY = atom.baseVelocityY;
+
+            // Draw atom as a circle
+            atom.draw = function(ctx) {
+
+                ctx.beginPath();
+
+                ctx.arc(
+                    this.x + this.width / 2,
+                    this.y + this.height / 2,
+                    this.width / 2,
+                    0,
+                    Math.PI * 2
+                );
+
+                ctx.fillStyle = this.color;
+                ctx.fill();
+
+            };
+
+            this.atoms.push(atom);
+            this.addEntity(atom);
+
+        }
+
+        this.resetAtoms();
+
+    }
+
+    setAtomCount(number) {
+
+        // Remove existing atoms
+        this.atoms.forEach(atom => {
+            this.removeEntity(atom);
+        });
+
+        this.atoms = [];
+
+        this.createAtoms(number);
+
+    }
+
+    resetAtoms() {
+
+        this.atoms.forEach(atom => {
+
+            // Random position
             atom.x = Math.random() *
                 (this.canvas.width - atom.width);
 
             atom.y = Math.random() *
                 (this.canvas.height - atom.height);
 
-        }
+            // Random direction
+            atom.baseVelocityX = (Math.random() - 0.5) * 500;
+            atom.baseVelocityY = (Math.random() - 0.5) * 500;
 
-    });
+            atom.velocityX = atom.baseVelocityX;
+            atom.velocityY = atom.baseVelocityY;
+
+        });
 
     }
 
-    moveatom() {
-    this.Atoms.forEach(atom => {
+    // -----------------------------------------
+    // Atom Movement
+    // -----------------------------------------
+
+    moveAtoms(deltaTime) {
+
+        const speedMultiplier =
+            0.5 + this.getTemperatureFactor() * 2.5;
+
+        this.atoms.forEach(atom => {
+
+            atom.velocityX = atom.baseVelocityX * speedMultiplier;
+            atom.velocityY = atom.baseVelocityY * speedMultiplier;
+
+            atom.x += atom.velocityX * deltaTime;
+            atom.y += atom.velocityY * deltaTime;
+
+            // Horizontal boundaries
+            if (atom.x < 0) {
+                atom.x = 0;
+                atom.baseVelocityX = Math.abs(atom.baseVelocityX);
+            }
+
+            if (atom.x + atom.width > this.canvas.width) {
+                atom.x = this.canvas.width - atom.width;
+                atom.baseVelocityX = -Math.abs(atom.baseVelocityX);
+            }
+
+            // Vertical boundaries
+            if (atom.y < 0) {
+                atom.y = 0;
+                atom.baseVelocityY = Math.abs(atom.baseVelocityY);
+            }
+
+            if (atom.y + atom.height > this.canvas.height) {
+                atom.y = this.canvas.height - atom.height;
+                atom.baseVelocityY = -Math.abs(atom.baseVelocityY);
+            }
+
+        });
+
+    }
+
+    // -----------------------------------------
+    // Collision Detection
+    // -----------------------------------------
+
+    checkPlayerCollisions() {
+
+        this.atoms.forEach(atom => {
+
+            if (Collision.check(this.player, atom)) {
+
+                this.scoreManager.add(50);
+                this.resetAtom(atom);
+
+            }
+
+        });
+
+    }
+
+    resetAtom(atom) {
 
         atom.x = Math.random() *
             (this.canvas.width - atom.width);
@@ -93,108 +225,59 @@ export default class CollectionGame extends Game {
         atom.y = Math.random() *
             (this.canvas.height - atom.height);
 
-        // Give each atom a new random direction
-        atom.velocityX = (Math.random() - 0.5) * 200;
-        atom.velocityY = (Math.random() - 0.5) * 200;
+    }
 
-    });
-}
+    checkAtomCollisions() {
 
-    moveAtoms(deltaTime) {
+        for (let i = 0; i < this.atoms.length; i++) {
 
-    const temperatureFactor =
-        (this.temperature - this.minTemperature) /
-        (this.maxTemperature - this.minTemperature);
+            for (let j = i + 1; j < this.atoms.length; j++) {
 
-    const speedMultiplier = 0.5 + temperatureFactor * 2.5;
+                const a = this.atoms[i];
+                const b = this.atoms[j];
 
-    this.Atoms.forEach(atom => {
+                const dx =
+                    (b.x + b.width / 2) -
+                    (a.x + a.width / 2);
 
-        // Calculate temperature-dependent velocity
-        atom.velocityX =
-            atom.baseVelocityX * speedMultiplier;
+                const dy =
+                    (b.y + b.height / 2) -
+                    (a.y + a.height / 2);
 
-        atom.velocityY =
-            atom.baseVelocityY * speedMultiplier;
+                const distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Move atom
-        atom.x += atom.velocityX * deltaTime;
-        atom.y += atom.velocityY * deltaTime;
+                const radiusA = a.width / 2;
+                const radiusB = b.width / 2;
 
-        // Left wall
-        if (atom.x < 0) {
-            atom.x = 0;
-            atom.baseVelocityX = Math.abs(atom.baseVelocityX);
-        }
+                if (distance >= radiusA + radiusB) continue;
 
-        // Right wall
-        if (atom.x + atom.width > this.canvas.width) {
-            atom.x = this.canvas.width - atom.width;
-            atom.baseVelocityX = -Math.abs(atom.baseVelocityX);
-        }
-
-        // Top wall
-        if (atom.y < 0) {
-            atom.y = 0;
-            atom.baseVelocityY = Math.abs(atom.baseVelocityY);
-        }
-
-        // Bottom wall
-        if (atom.y + atom.height > this.canvas.height) {
-            atom.y = this.canvas.height - atom.height;
-            atom.baseVelocityY = -Math.abs(atom.baseVelocityY);
-        }
-
-    });
-}
-
-checkatomCollisions() {
-
-    for (let i = 0; i < this.Atoms.length; i++) {
-
-        for (let j = i + 1; j < this.Atoms.length; j++) {
-
-            const a = this.Atoms[i];
-            const b = this.Atoms[j];
-
-            // Calculate distance between circle centres
-            const dx = (b.x + b.width / 2) - (a.x + a.width / 2);
-            const dy = (b.y + b.height / 2) - (a.y + a.height / 2);
-
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            const radiusA = a.width / 2;
-            const radiusB = b.width / 2;
-
-            // Check for collision
-            if (distance < radiusA + radiusB) {
-
-                // Calculate collision normal
+                // Collision normal
                 const nx = dx / distance;
                 const ny = dy / distance;
 
-                // Calculate relative velocity
-                const relativeVelocityX = b.velocityX - a.velocityX;
-                const relativeVelocityY = b.velocityY - a.velocityY;
+                // Relative velocity
+                // Relative velocity using base velocities
+                const relativeVelocityX = b.baseVelocityX - a.baseVelocityX;
+                const relativeVelocityY = b.baseVelocityY - a.baseVelocityY;
 
                 const velocityAlongNormal =
                     relativeVelocityX * nx +
                     relativeVelocityY * ny;
 
-                // Only resolve if objects are moving towards each other
+                // Only resolve if atoms are approaching
                 if (velocityAlongNormal < 0) {
 
                     const impulse = velocityAlongNormal;
 
-                    a.velocityX += impulse * nx;
-                    a.velocityY += impulse * ny;
+                    a.baseVelocityX += impulse * nx;
+                    a.baseVelocityY += impulse * ny;
 
-                    b.velocityX -= impulse * nx;
-                    b.velocityY -= impulse * ny;
+                    b.baseVelocityX -= impulse * nx;
+                    b.baseVelocityY -= impulse * ny;
 
-                }
+}
 
-                // Separate overlapping circles
+                // Separate overlapping atoms
                 const overlap = radiusA + radiusB - distance;
 
                 a.x -= nx * overlap / 2;
@@ -209,64 +292,14 @@ checkatomCollisions() {
 
     }
 
-}
-
-setatomCount(number) {
-
-    // Remove existing Atoms from the game
-    this.Atoms.forEach(atom => {
-        this.removeEntity(atom);
-    });
-
-    // Clear the existing array
-    this.Atoms = [];
-
-    // Create the requested number of Atoms
-    this.createAtoms(number);
-
-}
-
-    createAtoms(number) {
-    for (let i = 0; i < number; i++) {
-        const atom = new Entity(0, 0, 20, 20);
-        atom.color = "orange";
-
-        // Assign random movement
-        // atom.baseVelocityX = (Math.random() - 0.5) * 200;
-        // atom.baseVelocityY = (Math.random() - 0.5) * 200;
-
-        atom.baseVelocityX = (Math.random() - 0.5) * 500;
-        atom.baseVelocityY = (Math.random() - 0.5) * 500;
-
-        atom.velocityX = atom.baseVelocityX;
-        atom.velocityY = atom.baseVelocityY;
-
-        // Draw as a circle
-        atom.draw = function(ctx) {
-        ctx.beginPath();
-        ctx.arc(
-            this.x + this.width / 2,
-            this.y + this.height / 2,
-            this.width / 2,
-            0,
-            Math.PI * 2
-        );
-        ctx.fillStyle = this.color;
-        ctx.fill();
-        };
-
-        this.Atoms.push(atom);
-        this.addEntity(atom);
-    }
-
-    this.moveatom();
-    }
+    // -----------------------------------------
+    // Drawing
+    // -----------------------------------------
 
     draw() {
 
         super.draw();
 
-        // Draw score
         this.ctx.fillStyle = "black";
         this.ctx.font = "20px Atkinson Hyperlegible";
 
@@ -278,6 +311,10 @@ setatomCount(number) {
 
     }
 
+    // -----------------------------------------
+    // Restart
+    // -----------------------------------------
+
     restart() {
 
         this.scoreManager.reset();
@@ -285,7 +322,7 @@ setatomCount(number) {
         this.player.x = 50;
         this.player.y = 50;
 
-        this.moveatom();
+        this.resetAtoms();
 
         this.running = false;
         this.start();
