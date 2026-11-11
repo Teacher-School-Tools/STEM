@@ -16,9 +16,9 @@ export default class CollectionGame extends Game {
         this.scoreManager = new Score();
 
         // Temperature settings
-        this.temperature = 20;
-        this.minTemperature = 0;
-        this.maxTemperature = 500;
+        this.temperature = 298;
+        this.minTemperature = 298;
+        this.maxTemperature = 798;
 
         // Player
         this.player = new Player(50, 50, 30, 30);
@@ -27,6 +27,8 @@ export default class CollectionGame extends Game {
         // Atoms
         this.atoms = [];
         this.createAtoms(5);
+        this.scoreManager.value = 5000 * 5
+
     }
 
     // -----------------------------------------
@@ -57,6 +59,7 @@ export default class CollectionGame extends Game {
         this.moveAtoms(deltaTime);
         this.checkAtomCollisions();
         this.checkPlayerCollisions();
+        this.scoreManager.add(Math.round(1 *  (this.getTemperatureFactor() + 0.5)))
 
     }
 
@@ -130,6 +133,7 @@ export default class CollectionGame extends Game {
         this.atoms = [];
 
         this.createAtoms(number);
+        this.scoreManager.value = 5000 * number
 
     }
 
@@ -304,7 +308,7 @@ export default class CollectionGame extends Game {
         this.ctx.font = "20px Atkinson Hyperlegible";
 
         this.ctx.fillText(
-            `Score: ${this.scoreManager.getValue()}`,
+            `Cost: $ ${this.scoreManager.getValue()}`,
             10,
             25
         );
