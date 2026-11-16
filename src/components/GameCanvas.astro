@@ -5,14 +5,16 @@ interface Props {
 }
 
 const { gameName, gameDir } = Astro.props;
-
 ---
+
 <h1>{gameName}</h1>
 
 <div class="game-container">
 
     <div class="info-panel">
-        <p>Use the arrow keys or WASD to move.</p>
+    <p>Use the left and right arrow keys to aim the cannon.</p>
+    <p>Press SPACE to fire projectiles.</p>
+    <p>Collect the atoms to earn points.</p>
     </div>
 
     <canvas
@@ -23,6 +25,23 @@ const { gameName, gameDir } = Astro.props;
     ></canvas>
 
     <div class="game-controls">
+
+        <!-- Level selector -->
+        <div class="level-control">
+        <label for="levelSelector">Select Level:</label>
+
+        <select id="levelSelector">
+            <option value="level1">Level 1</option>
+            <option value="level2">Level 2</option>
+            <option value="level3">Level 3</option>
+        </select>
+    </div>
+
+    <div class="game-buttons">
+            <button id="startGame">Start</button>
+            <button id="pauseGame">Pause</button>
+            <button id="restartGame">Restart</button>
+    </div>
 
         <div class="temperature-control">
             <label for="temperature">
@@ -54,19 +73,15 @@ const { gameName, gameDir } = Astro.props;
             />
         </div>
 
-        <div class="game-buttons">
-            <button id="startGame">Start</button>
-            <button id="pauseGame">Pause</button>
-            <button id="restartGame">Restart</button>
-        </div>
+        
 
     </div>
 
 </div>
 
 <script>
-    
-import Game from "../game/projects/CollectionGame.js";
+
+import Game from "../game/projects/NuclearGame.js";
 
 const canvas = document.querySelector("#gameCanvas");
 const startButton = document.querySelector("#startGame");
@@ -81,6 +96,23 @@ if (
 ) {
 
     const game = new Game(canvas);
+
+    // Level selector
+    const levelSelector = document.querySelector("#levelSelector");
+
+    if (levelSelector instanceof HTMLSelectElement) {
+        levelSelector.addEventListener("change", () => {
+
+            const selectedLevel = levelSelector.value;
+
+            // Change the active game scene
+            if (typeof game.setLevel === "function") {
+                game.setLevel(selectedLevel);
+            }
+
+            canvas.focus();
+        });
+    }
 
     // Temperature slider
     const slider = document.querySelector("#temperature");
@@ -99,7 +131,7 @@ if (
         });
     }
 
-    // atom count slider
+    // Atom count slider
     const Atomslider = document.querySelector("#atomCount");
     const atomValue = document.querySelector("#atomCountValue");
 
@@ -108,14 +140,12 @@ if (
         atomValue
     ) {
         Atomslider.addEventListener("input", () => {
-    const count = Number(Atomslider.value);
+            const count = Number(Atomslider.value);
 
-    // Update displayed HTML value
-    atomValue.textContent = count.toString();
+            atomValue.textContent = count.toString();
 
-    // Update number of atoms in game
-    game.setAtomCount(count);
-});
+            game.setAtomCount(count);
+        });
     }
 
     // Canvas focus
@@ -138,6 +168,7 @@ if (
         } else if (game.state === "paused") {
             game.resume();
         }
+
         canvas.focus();
     });
 
@@ -148,7 +179,44 @@ if (
     });
 
 }
+    const levelSelector = document.querySelector("#levelSelector");
 
+    if (levelSelector instanceof HTMLSelectElement) {
+
+        levelSelector.addEventListener("change", () => {
+
+            game.setLevel(levelSelector.value);
+
+            canvas.focus();
+
+        });
+
+    }
+
+// Prevent page scrolling while using game controls
+document.addEventListener("keydown", (event) => {
+
+    const gameKeys = [
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        " ",
+        "w",
+        "a",
+        "s",
+        "d",
+        "W",
+        "A",
+        "S",
+        "D"
+    ];
+
+    if (gameKeys.includes(event.key)) {
+        event.preventDefault();
+    }
+
+});
 </script>
 
 <style>
@@ -183,15 +251,28 @@ canvas {
     display: block;
 }
 
-.game-controls input {
+.game-controls input,
+.game-controls select {
     width: 100%;
     margin: 5px 0 15px;
+}
+
+.game-controls select {
+    padding: 8px;
+    cursor: pointer;
 }
 
 .game-controls button {
     width: 100%;
     padding: 10px;
     cursor: pointer;
+}
+
+/* Game buttons */
+.game-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 /* Smaller screens */
@@ -210,10 +291,5 @@ canvas {
         max-width: 400px;
         margin: auto;
     }
-}
-.game-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 </style>
