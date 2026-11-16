@@ -13,6 +13,8 @@ export default class NuclearGame extends Game {
         // Game systems
         this.input = new Input();
         this.scoreManager = new Score();
+        this.levelComplete = false;
+        this.finalScore = 0;
 
         // Temperature settings
         this.temperature = 298;
@@ -25,7 +27,7 @@ export default class NuclearGame extends Game {
         // Cannon settings
         this.cannon = {
             x: this.canvas.width / 2,
-            y: this.canvas.height - 30,
+            y: this.canvas.height,
             angle: -Math.PI / 2,
             rotationSpeed: 2,
             barrelLength: 35
@@ -55,18 +57,21 @@ export default class NuclearGame extends Game {
             level1: {
                 atomCount: 5,
                 temperature: 298,
+                atomHealth: 1,
                 background: "#f5f5f5"
             },
 
             level2: {
-                atomCount: 15,
+                atomCount: 5,
                 temperature: 398,
+                atomHealth: 2,
                 background: "#e8f4ff"
             },
 
             level3: {
-                atomCount: 30,
+                atomCount: 5,
                 temperature: 598,
+                atomHealth: 3,
                 background: "#fff0e0"
             }
         };
@@ -76,6 +81,7 @@ export default class NuclearGame extends Game {
         if (!selectedLevel) return;
 
         this.currentLevel = level;
+        this.atomHealth = selectedLevel.atomHealth
 
         this.setTemperature(selectedLevel.temperature);
         this.setAtomCount(selectedLevel.atomCount);
@@ -85,6 +91,28 @@ export default class NuclearGame extends Game {
 
         this.restart();
     }
+
+    start() {
+    if (this.levelComplete) {
+        this.levelComplete = false;
+        this.finalScore = 0;
+    }
+
+    super.start();
+}
+
+    // -----------------------------------------
+    // Level Completion
+    // -----------------------------------------
+
+    checkLevelCompletion() {
+    if (this.atoms.length === 0 && !this.levelComplete) {
+        this.levelComplete = true;
+        this.finalScore = this.scoreManager.getValue();
+
+        this.state = "finished";
+    }
+}
 
     // -----------------------------------------
     // Temperature
@@ -513,22 +541,20 @@ export default class NuclearGame extends Game {
     // -----------------------------------------
 
     update(deltaTime) {
+    if (this.levelComplete) return;
 
-        this.updateCannon(deltaTime);
-        this.updateProjectiles(deltaTime);
+    this.updateCannon(deltaTime);
+    this.updateProjectiles(deltaTime);
+    this.moveAtoms(deltaTime);
+    this.checkAtomCollisions();
+    this.checkProjectileCollisions();
 
-        this.moveAtoms(deltaTime);
+    this.scoreManager.add(
+        Math.round((1 + (this.getTemperatureFactor() + 0.3)) ** 2)
+    );
 
-        this.checkAtomCollisions();
-        this.checkProjectileCollisions();
-
-        this.scoreManager.add(
-            Math.round(
-                (1 + (this.getTemperatureFactor() + 0.3)) ** 2
-            )
-        );
-
-    }
+    this.checkLevelCompletion();
+}
 
     // -----------------------------------------
     // Drawing
@@ -629,29 +655,61 @@ export default class NuclearGame extends Game {
             10,
             50
         );
+        if (this.levelComplete) {
+        this.drawLevelComplete();
+    }
 
     }
+    drawLevelComplete() {
+    this.ctx.save();
+
+    // Dark overlay
+    this.ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Completion message
+    this.ctx.textAlign = "center";
+    this.ctx.fillStyle = "white";
+    this.ctx.font = "bold 36px Atkinson Hyperlegible";
+    this.ctx.fillText(
+        "Level completed!",
+        this.canvas.width / 2,
+        this.canvas.height / 2 - 30
+    );
+
+    // Final score
+    this.ctx.font = "24px Atkinson Hyperlegible";
+    this.ctx.fillText(
+        `Money Spent: $${this.finalScore.toLocaleString()}`,
+        this.canvas.width / 2,
+        this.canvas.height / 2 + 20
+    );
+
+    this.ctx.restore();
+}
 
     // -----------------------------------------
     // Restart
     // -----------------------------------------
 
     restart() {
+    this.levelComplete = false;
+    this.finalScore = 0;
 
-        this.scoreManager.reset();
+    this.scoreManager.reset();
 
-        this.cannon.angle = -Math.PI / 2;
+    this.cannon.angle = -Math.PI / 2;
+    this.projectiles = [];
+    this.fireCooldown = 0;
 
-        this.projectiles = [];
+    this.resetAtoms();
 
-        this.fireCooldown = 0;
+    this.scoreManager.add(5000 * this.atoms.length);
 
-        this.resetAtoms();
+    this.state = "menu";
+    this.running = false;
 
-        this.scoreManager.add(5000 * this.atoms.length);
-
-        this.running = false;
-
-    }
+    this.start();
+}
 
 }
