@@ -5,6 +5,8 @@ import HeaderDropdown from "../components/HeaderDropdown.astro";
 import "../styles/global.css";
 
 const { title = "SCH3U Curriculum Resources" } = Astro.props;
+
+const currentPath = Astro.url.pathname;
 ---
 
 <script is:inline>
@@ -35,7 +37,7 @@ const { title = "SCH3U Curriculum Resources" } = Astro.props;
       <div class="main-container">
 
         <div class="sidebar-space">
-          <Sidebar />
+          <Sidebar currentPath={currentPath} />
         </div>
 
         <main class="page-content">
@@ -104,5 +106,15 @@ const { title = "SCH3U Curriculum Resources" } = Astro.props;
     margin-left: auto;
     margin-right: auto;
     position: relative;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+
+  .main-layout {
+    display: flex;
+    min-height: 100vh;
+    align-items: stretch;
   }
 </style>
