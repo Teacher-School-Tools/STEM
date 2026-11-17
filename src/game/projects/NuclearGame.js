@@ -27,6 +27,13 @@ const LEVELS = {
         temperature: 598,
         atomHealth: 3,
         background: "#fff0e0"
+    },
+    
+    level4: {
+        atomCount: 5,
+        temperature: 298,
+        atomHealth: 1,
+        background: "#f5f5f5"
     }
 };
 
@@ -87,14 +94,19 @@ export default class NuclearGame extends Game {
 
         this.currentLevel = level;
 
-        this.atomCount = settings.atomCount;
         this.atomHealth = settings.atomHealth;
+        this.atomCount = settings.atomCount;
 
         this.setTemperature(settings.temperature);
 
-        this.canvas.style.backgroundColor = settings.background;
+        this.canvas.style.backgroundColor =
+            settings.background;
 
         this.restart();
+    }
+
+    showCustomizationControls() {
+        return this.currentLevel === "level4";
     }
 
     start() {
@@ -199,7 +211,44 @@ export default class NuclearGame extends Game {
     }
 
     setAtomCount(number) {
-        this.atomCount = number;
+
+        // Only allow customization on Level 4
+        if (this.currentLevel !== "level4") return;
+
+        const count = Number(number);
+
+        if (!Number.isFinite(count)) return;
+
+        // Restrict the number of atoms to 1–50
+        this.atomCount = Math.max(
+            1,
+            Math.min(50, Math.floor(count))
+        );
+
+        // Remove existing atoms
+        this.atoms.forEach(atom => {
+            this.removeEntity(atom);
+        });
+
+        this.atoms = [];
+
+        // Remove existing projectiles
+        this.projectiles = [];
+
+        // Recreate atoms using the new count
+        this.createAtoms(this.atomCount);
+
+        // Reset score for the new atom count
+        this.resetScore();
+
+        // Reset completion state
+        this.levelComplete = false;
+        this.finalScore = 0;
+
+        // Allow the player to restart if the previous game was completed
+        if (this.state === "finished") {
+            this.state = "menu";
+        }
     }
 
     resetAtoms() {

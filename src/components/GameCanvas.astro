@@ -19,236 +19,354 @@ const { gameName, gameDir } = Astro.props;
         i
     </button>
 </div>
+
 <div class="game-container">
-    <div class="instructions-modal" id="instructionsModal">
-    <div class="instructions-content">
-        <button
-            class="close-instructions"
-            id="closeInstructions"
-            aria-label="Close instructions"
+
+    <!-- Instructions popup -->
+    <div
+        class="instructions-modal"
+        id="instructionsModal"
+        aria-hidden="false"
+    >
+        <div
+            class="instructions-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="instructionsTitle"
         >
-            &times;
-        </button>
+            <button
+                class="close-instructions"
+                id="closeInstructions"
+                aria-label="Close instructions"
+            >
+                &times;
+            </button>
 
-        <h2>Game Instructions</h2>
+            <h2 id="instructionsTitle">Game Instructions</h2>
 
-        <div class="preamble">
-            <p>Use the left and right arrow keys to aim the cannon. The up and down arrow keys can be used for finer movement.</p>
-            <p>Press SPACE to fire neutrons.</p>
-            <p>Your goal is to minimize the number of neutrons you shoot to achieve your goal, as each shot costs a LOT of money!</p>
+            <div class="preamble">
+                <p>Use the left and right arrow keys to aim the cannon.</p>
+                <p>Use the up and down arrow keys for finer movement.</p>
+                <p>Press SPACE to fire neutrons.</p>
+                <p>
+                    Your goal is to minimize the number of neutrons
+                    you shoot, as each shot costs a LOT of money!
+                </p>
+            </div>
         </div>
     </div>
-</div>
 
+    <!-- Game canvas -->
     <canvas
         id="gameCanvas"
         width="600"
         height="400"
         tabindex="0"
+        aria-label="Nuclear physics game"
     ></canvas>
 
+    <!-- Game controls -->
     <div class="game-controls">
 
-        <!-- Level selector -->
-        <div class="level-control">
-        <label for="levelSelector">Select Level:</label>
+        <div class="control-group">
+            <label for="levelSelector">Select Level</label>
 
-        <select id="levelSelector">
-            <option value="level1">Level 1</option>
-            <option value="level2">Level 2</option>
-            <option value="level3">Level 3</option>
-        </select>
-    </div>
+            <select id="levelSelector">
+                <option value="level1">Level 1</option>
+                <option value="level2">Level 2</option>
+                <option value="level3">Level 3</option>
+                <option value="level4">Level 4</option>
+            </select>
+        </div>
 
-    <div class="game-buttons">
+        <div class="game-buttons">
             <button id="startGame">Start</button>
             <button id="pauseGame">Pause</button>
             <button id="restartGame">Restart</button>
-    </div>
-
-        <div class="temperature-control">
-            <label for="temperature">
-                Temperature: <span id="temperatureValue">298 K</span>
-            </label>
-
-            <input
-                type="range"
-                id="temperature"
-                min="298"
-                max="798"
-                value="298"
-                step="1"
-            />
         </div>
 
-        <div class="atom-control">
-            <label for="atomCount">
-                Number of Atoms: <span id="atomCountValue">5</span>
-            </label>
+        <!-- Level 4 controls -->
+        <div id="level4-controls" class="level4-controls">
 
-            <input
-                type="range"
-                id="atomCount"
-                min="1"
-                max="50"
-                value="5"
-                step="1"
-            />
+            <div class="control-group">
+                <label for="temperature">
+                    Temperature:
+                    <span id="temperatureValue">298 K</span>
+                </label>
+
+                <input
+                    type="range"
+                    id="temperature"
+                    min="298"
+                    max="798"
+                    value="298"
+                    step="1"
+                />
+            </div>
+
+            <div class="control-group">
+                <label for="atomCount">
+                    Number of Atoms:
+                    <span id="atomCountValue">5</span>
+                </label>
+
+                <input
+                    type="range"
+                    id="atomCount"
+                    min="1"
+                    max="50"
+                    value="5"
+                    step="1"
+                />
+            </div>
+
         </div>
 
-        
-
     </div>
-
 </div>
 
 <script>
-
 import Game from "../game/projects/NuclearGame.js";
 
+// =========================================
+// DOM Elements
+// =========================================
+
 const canvas = document.querySelector("#gameCanvas");
+
 const startButton = document.querySelector("#startGame");
 const pauseButton = document.querySelector("#pauseGame");
 const restartButton = document.querySelector("#restartGame");
 
-const instructionsModal = document.getElementById("instructionsModal");
-const closeInstructions = document.getElementById("closeInstructions");
-const openInstructions = document.getElementById("openInstructions");
+const levelSelector = document.querySelector("#levelSelector");
+const level4Controls = document.querySelector("#level4-controls");
 
-// Show instructions when the page loads
-instructionsModal.style.display = "flex";
+const temperatureSlider = document.querySelector("#temperature");
+const temperatureValue = document.querySelector("#temperatureValue");
 
-// Close instructions
-closeInstructions.addEventListener("click", () => {
-    instructionsModal.style.display = "none";
-});
+const atomSlider = document.querySelector("#atomCount");
+const atomValue = document.querySelector("#atomCountValue");
 
-// Reopen instructions
-openInstructions.addEventListener("click", () => {
-    instructionsModal.style.display = "flex";
-});
+const instructionsModal = document.querySelector("#instructionsModal");
+const openInstructions = document.querySelector("#openInstructions");
+const closeInstructions = document.querySelector("#closeInstructions");
 
-// Close when clicking outside the popup
-instructionsModal.addEventListener("click", (event) => {
-    if (event.target === instructionsModal) {
-        instructionsModal.style.display = "none";
+// =========================================
+// Instructions
+// =========================================
+
+function initializeInstructions() {
+
+    if (
+        !(instructionsModal instanceof HTMLElement) ||
+        !(openInstructions instanceof HTMLButtonElement) ||
+        !(closeInstructions instanceof HTMLButtonElement)
+    ) {
+        return;
     }
-});
 
-// Close with Escape
-document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-        instructionsModal.style.display = "none";
+    function openModal() {
+        instructionsModal.style.display = "flex";
+        instructionsModal.setAttribute("aria-hidden", "false");
+        closeInstructions.focus();
     }
-});
 
-if (
-    canvas instanceof HTMLCanvasElement &&
-    startButton &&
-    pauseButton &&
-    restartButton
-) {
+    function closeModal() {
+        instructionsModal.style.display = "none";
+        instructionsModal.setAttribute("aria-hidden", "true");
+        openInstructions.focus();
+    }
+
+    openInstructions.addEventListener("click", openModal);
+    closeInstructions.addEventListener("click", closeModal);
+
+    instructionsModal.addEventListener("click", (event) => {
+        if (event.target === instructionsModal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (
+            event.key === "Escape" &&
+            instructionsModal.style.display === "flex"
+        ) {
+            closeModal();
+        }
+    });
+
+    openModal();
+}
+
+// =========================================
+// Game Initialization
+// =========================================
+
+function initializeGame() {
+
+    if (
+        !(canvas instanceof HTMLCanvasElement) ||
+        !(startButton instanceof HTMLButtonElement) ||
+        !(pauseButton instanceof HTMLButtonElement) ||
+        !(restartButton instanceof HTMLButtonElement)
+    ) {
+        return;
+    }
 
     const game = new Game(canvas);
 
-    // Level selector
-    const levelSelector = document.querySelector("#levelSelector");
+    // -------------------------------------
+    // Level Controls
+    // -------------------------------------
+
+    function updateLevelControls() {
+
+        if (
+            levelSelector instanceof HTMLSelectElement &&
+            level4Controls instanceof HTMLElement
+        ) {
+            level4Controls.style.display =
+                levelSelector.value === "level4" ? "flex" : "none";
+        }
+    }
+
+    function resetLevel4Controls() {
+
+        if (temperatureSlider instanceof HTMLInputElement) {
+            temperatureSlider.value = "298";
+        }
+
+        if (temperatureValue) {
+            temperatureValue.textContent = "298 K";
+        }
+
+        if (atomSlider instanceof HTMLInputElement) {
+            atomSlider.value = "5";
+        }
+
+        if (atomValue) {
+            atomValue.textContent = "5";
+        }
+    }
+
+    // -------------------------------------
+    // Level Selection
+    // -------------------------------------
 
     if (levelSelector instanceof HTMLSelectElement) {
+
         levelSelector.addEventListener("change", () => {
 
             const selectedLevel = levelSelector.value;
 
-            // Change the active game scene
+            updateLevelControls();
+
             if (typeof game.setLevel === "function") {
                 game.setLevel(selectedLevel);
+            }
+
+            if (selectedLevel === "level4") {
+                resetLevel4Controls();
             }
 
             canvas.focus();
         });
     }
 
-    // Temperature slider
-    const slider = document.querySelector("#temperature");
-    const temperatureValue = document.querySelector("#temperatureValue");
+    // -------------------------------------
+    // Temperature
+    // -------------------------------------
 
     if (
-        slider instanceof HTMLInputElement &&
+        temperatureSlider instanceof HTMLInputElement &&
         temperatureValue
     ) {
-        slider.addEventListener("input", () => {
-            const temperature = Number(slider.value);
+
+        temperatureSlider.addEventListener("input", () => {
+
+            const temperature = Number(temperatureSlider.value);
 
             temperatureValue.textContent = `${temperature} K`;
 
-            game.setTemperature(temperature);
+            if (
+                levelSelector instanceof HTMLSelectElement &&
+                levelSelector.value === "level4"
+            ) {
+                game.setTemperature(temperature);
+            }
         });
     }
 
-    // Atom count slider
-    const Atomslider = document.querySelector("#atomCount");
-    const atomValue = document.querySelector("#atomCountValue");
+    // -------------------------------------
+    // Atom Count
+    // -------------------------------------
 
     if (
-        Atomslider instanceof HTMLInputElement &&
+        atomSlider instanceof HTMLInputElement &&
         atomValue
     ) {
-        Atomslider.addEventListener("input", () => {
-            const count = Number(Atomslider.value);
 
-            atomValue.textContent = count.toString();
+        atomSlider.addEventListener("input", () => {
 
-            game.setAtomCount(count);
+            atomValue.textContent = atomSlider.value;
+        });
+
+        atomSlider.addEventListener("change", () => {
+
+            const count = Number(atomSlider.value);
+
+            if (
+                levelSelector instanceof HTMLSelectElement &&
+                levelSelector.value === "level4"
+            ) {
+                game.setAtomCount(count);
+            }
         });
     }
 
-    // Canvas focus
+    // -------------------------------------
+    // Game Buttons
+    // -------------------------------------
+
     canvas.addEventListener("click", () => {
         canvas.focus();
     });
 
-    // Start
     startButton.addEventListener("click", () => {
+
         if (!game.running) {
             game.start();
-            canvas.focus();
         }
+
+        canvas.focus();
     });
 
-    // Pause / Resume
     pauseButton.addEventListener("click", () => {
+
         if (game.state === "playing") {
             game.pause();
-        } else if (game.state === "paused") {
+        }
+        else if (game.state === "paused") {
             game.resume();
         }
 
         canvas.focus();
     });
 
-    // Restart
     restartButton.addEventListener("click", () => {
+
         game.restart();
         canvas.focus();
     });
 
+    updateLevelControls();
 }
-    const levelSelector = document.querySelector("#levelSelector");
 
-    if (levelSelector instanceof HTMLSelectElement) {
+// =========================================
+// Keyboard Handling
+// =========================================
 
-        levelSelector.addEventListener("change", () => {
-
-            game.setLevel(levelSelector.value);
-
-            canvas.focus();
-
-        });
-
-    }
-
-// Prevent page scrolling while using game controls
-document.addEventListener("keydown", (event) => {
+function initializeKeyboardControls() {
 
     const gameKeys = [
         "ArrowUp",
@@ -266,39 +384,137 @@ document.addEventListener("keydown", (event) => {
         "D"
     ];
 
-    if (gameKeys.includes(event.key)) {
-        event.preventDefault();
-    }
+    document.addEventListener("keydown", (event) => {
 
-});
+        const target = event.target;
+
+        // Avoid interfering with form controls
+        if (
+            target instanceof HTMLInputElement ||
+            target instanceof HTMLSelectElement ||
+            target instanceof HTMLTextAreaElement
+        ) {
+            return;
+        }
+
+        if (gameKeys.includes(event.key)) {
+            event.preventDefault();
+        }
+    });
+}
+
+// =========================================
+// Initialize
+// =========================================
+
+initializeInstructions();
+initializeGame();
+initializeKeyboardControls();
+
 </script>
 
 <style>
+
+/* =========================================
+   Game Header
+========================================= */
+
+.game-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.game-header h1 {
+    margin: 0;
+}
+
+/* Instructions button */
+
+.instructions-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 22px;
+    height: 22px;
+
+    padding: 0;
+
+    border: 2px solid currentColor;
+    border-radius: 50%;
+
+    background: transparent;
+    color: inherit;
+
+    font-family: serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-style: italic;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.instructions-button:hover {
+    background: currentColor;
+    color: white;
+}
+
+/* =========================================
+   Game Layout
+========================================= */
+
 .game-container {
     display: grid;
-    grid-template-columns: 1fr minmax(0, 600px) 1fr;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 600px)
+        minmax(180px, 1fr);
+
     gap: 20px;
+
     width: 95%;
     margin: 2rem auto;
+
     align-items: start;
 }
 
-/* Keep canvas centered */
+/* Game canvas */
+
 canvas {
     grid-column: 2;
+
+    display: block;
+
     width: 100%;
     height: auto;
+
     border: 2px solid #333;
     background: #f5f5f5;
 }
 
-/* Position controls to the right */
+/* =========================================
+   Game Controls
+========================================= */
+
 .game-controls {
     grid-column: 3;
+
     display: flex;
     flex-direction: column;
     gap: 15px;
+
     width: 100%;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .game-controls label {
@@ -308,6 +524,7 @@ canvas {
 .game-controls input,
 .game-controls select {
     width: 100%;
+    box-sizing: border-box;
     margin: 5px 0 15px;
 }
 
@@ -323,35 +540,32 @@ canvas {
 }
 
 /* Game buttons */
+
 .game-buttons {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-/* Smaller screens */
-@media (max-width: 850px) {
-    .game-container {
-        grid-template-columns: 1fr;
-        width: 95%;
-    }
+/* Level 4 controls */
 
-    canvas {
-        grid-column: 1;
-    }
-
-    .game-controls {
-        grid-column: 1;
-        max-width: 400px;
-        margin: auto;
-    }
+.level4-controls {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
 }
+
+/* =========================================
+   Instructions Popup
+========================================= */
 
 .instructions-modal {
     display: none;
+
     position: fixed;
     z-index: 1000;
     inset: 0;
+
     background: rgba(0, 0, 0, 0.7);
 
     justify-content: center;
@@ -362,14 +576,17 @@ canvas {
 
 .instructions-content {
     position: relative;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
 
     width: 100%;
     max-width: 600px;
+
     max-height: 80vh;
     overflow-y: auto;
+
+    padding: 30px;
+
+    background: white;
+    border-radius: 10px;
 
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
@@ -395,43 +612,41 @@ canvas {
     color: #777;
 }
 
-.game-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+/* =========================================
+   Responsive Layout
+========================================= */
+
+@media (max-width: 1000px) {
+
+    .game-container {
+        grid-template-columns: minmax(0, 1fr) minmax(180px, 300px);
+    }
+
+    canvas {
+        grid-column: 1;
+    }
+
+    .game-controls {
+        grid-column: 2;
+    }
 }
 
-.game-header h1 {
-    margin: 0;
+@media (max-width: 650px) {
+
+    .game-container {
+        grid-template-columns: 1fr;
+        width: 95%;
+    }
+
+    canvas {
+        grid-column: 1;
+    }
+
+    .game-controls {
+        grid-column: 1;
+        max-width: 400px;
+        margin: auto;
+    }
 }
 
-.instructions-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 22px;
-    height: 22px;
-
-    padding: 0;
-    border: 2px solid currentColor;
-    border-radius: 50%;
-
-    background: transparent;
-    color: inherit;
-
-    font-family: serif;
-    font-size: 15px;
-    font-weight: bold;
-    font-style: italic;
-
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.instructions-button:hover {
-    background: currentColor;
-    color: white;
-}
 </style>
