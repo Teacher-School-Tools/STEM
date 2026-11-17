@@ -394,9 +394,9 @@ export default class NuclearGame extends Game {
                 atom.baseVelocityY = Math.abs(atom.baseVelocityY);
             }
 
-            if (atom.y + atom.height > this.canvas.height - 60) {
+            if (atom.y + atom.height > this.canvas.height - 30) {
 
-                atom.y = this.canvas.height - atom.height - 60;
+                atom.y = this.canvas.height - atom.height - 30;
                 atom.baseVelocityY = -Math.abs(atom.baseVelocityY);
             }
         });
@@ -590,6 +590,23 @@ export default class NuclearGame extends Game {
         if (this.levelComplete) {
             this.drawLevelComplete();
         }
+
+        // Draw bottom boundary
+        this.ctx.beginPath();
+
+        this.ctx.moveTo(
+            0,
+            this.canvas.height - 30
+        );
+
+        this.ctx.lineTo(
+            this.canvas.width,
+            this.canvas.height - 30
+        );
+
+        this.ctx.strokeStyle = "#000000";
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
     }
 
     drawCannon() {
@@ -639,6 +656,39 @@ export default class NuclearGame extends Game {
 
         ctx.strokeStyle = "black";
         ctx.stroke();
+
+        // Draw firing trajectory guide
+        const lineLength = 250;
+
+        const startX =
+            this.cannon.x +
+            Math.cos(this.cannon.angle) * this.cannon.barrelLength;
+
+        const startY =
+            this.cannon.y +
+            Math.sin(this.cannon.angle) * this.cannon.barrelLength;
+
+        const endX =
+            startX +
+            Math.cos(this.cannon.angle) * lineLength;
+
+        const endY =
+            startY +
+            Math.sin(this.cannon.angle) * lineLength;
+
+        this.ctx.save();
+
+        this.ctx.beginPath();
+        this.ctx.setLineDash([5, 7]);
+
+        this.ctx.moveTo(startX, startY);
+        this.ctx.lineTo(endX, endY);
+
+        this.ctx.strokeStyle = "red";
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+
+        this.ctx.restore();
     }
 
     drawProjectiles() {
