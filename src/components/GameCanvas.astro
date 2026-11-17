@@ -7,15 +7,38 @@ interface Props {
 const { gameName, gameDir } = Astro.props;
 ---
 
-<h1>{gameName}</h1>
+<div class="game-header">
+    <h1>{gameName}</h1>
 
+    <button
+        id="openInstructions"
+        class="instructions-button"
+        aria-label="Open game instructions"
+        title="Game instructions"
+    >
+        i
+    </button>
+</div>
 <div class="game-container">
+    <div class="instructions-modal" id="instructionsModal">
+    <div class="instructions-content">
+        <button
+            class="close-instructions"
+            id="closeInstructions"
+            aria-label="Close instructions"
+        >
+            &times;
+        </button>
 
-    <div class="info-panel">
-    <p>Use the left and right arrow keys to aim the cannon.</p>
-    <p>Press SPACE to fire projectiles.</p>
-    <p>Collect the atoms to earn points.</p>
+        <h2>Game Instructions</h2>
+
+        <div class="preamble">
+            <p>Use the left and right arrow keys to aim the cannon. The up and down arrow keys can be used for finer movement.</p>
+            <p>Press SPACE to fire neutrons.</p>
+            <p>Your goal is to minimize the number of neutrons you shoot to achieve your goal, as each shot costs a LOT of money!</p>
+        </div>
     </div>
+</div>
 
     <canvas
         id="gameCanvas"
@@ -87,6 +110,37 @@ const canvas = document.querySelector("#gameCanvas");
 const startButton = document.querySelector("#startGame");
 const pauseButton = document.querySelector("#pauseGame");
 const restartButton = document.querySelector("#restartGame");
+
+const instructionsModal = document.getElementById("instructionsModal");
+const closeInstructions = document.getElementById("closeInstructions");
+const openInstructions = document.getElementById("openInstructions");
+
+// Show instructions when the page loads
+instructionsModal.style.display = "flex";
+
+// Close instructions
+closeInstructions.addEventListener("click", () => {
+    instructionsModal.style.display = "none";
+});
+
+// Reopen instructions
+openInstructions.addEventListener("click", () => {
+    instructionsModal.style.display = "flex";
+});
+
+// Close when clicking outside the popup
+instructionsModal.addEventListener("click", (event) => {
+    if (event.target === instructionsModal) {
+        instructionsModal.style.display = "none";
+    }
+});
+
+// Close with Escape
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        instructionsModal.style.display = "none";
+    }
+});
 
 if (
     canvas instanceof HTMLCanvasElement &&
@@ -291,5 +345,93 @@ canvas {
         max-width: 400px;
         margin: auto;
     }
+}
+
+.instructions-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+}
+
+.instructions-content {
+    position: relative;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.instructions-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.close-instructions {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+
+    background: none;
+    border: none;
+
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.close-instructions:hover {
+    color: #777;
+}
+
+.game-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.game-header h1 {
+    margin: 0;
+}
+
+.instructions-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 22px;
+    height: 22px;
+
+    padding: 0;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+
+    background: transparent;
+    color: inherit;
+
+    font-family: serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-style: italic;
+
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.instructions-button:hover {
+    background: currentColor;
+    color: white;
 }
 </style>
