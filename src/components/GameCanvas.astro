@@ -68,11 +68,9 @@ const { gameName, gameDir } = Astro.props;
     <section id="level-description">
 
         <h2 id="level-description-title">
-            Level 1
         </h2>
 
         <p id="level-description-text">
-            Welcome to Level 1.
         </p>
 
     </section>
@@ -257,22 +255,21 @@ const levelDescriptions = {
 
     level0: {
         title: "Practice Mode",
-        description: `
-            Customize and learn to control your cannon.
-        `
+        description: `Customize your cannon and learn to control it. You can always return here to modify it. Investigate how the temperature changes the behaviour of the atoms.
+        `,
+        equation: ""
     },
 
     level1: {
         title: "Level 1: Introduction",
-        description: `
-            Fire the least number of neutrons at the atoms to induce nuclear fission.
-        `
+        description: `Fire the least number of neutrons at the atoms to induce nuclear fission.
+        `,
+        equation: "",
     },
 
     level2: {
         title: "Level 2: Increased Difficulty",
-        description: `
-            Atoms are faster and have more health.
+        description: `Atoms are faster and have more health.
 
             Plan your shots carefully and try to
             minimize the number of neutrons used.
@@ -281,11 +278,8 @@ const levelDescriptions = {
 
     level3: {
         title: "Level 3: Advanced Challenge",
-        description: `
-            You are now facing a more challenging
-            and realistic simulation.
-
-            You cannot aim the cannon. Time your shots wisely.
+        description: `You are now facing a more challenging and realistic simulation.
+        You cannot aim the cannon. Time your shots wisely.
         `
     },
 
@@ -341,6 +335,8 @@ function initializeInstructions() {
     openModal();
 
 }
+
+
 
 // =========================================
 // Level Description

@@ -21,6 +21,22 @@ const currentPath = Astro.url.pathname;
   })();
 </script>
 
+<script>
+    import renderMathInElement from "katex/contrib/auto-render";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        renderMathInElement(document.body, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false }
+            ],
+            throwOnError: false
+        });
+    });
+</script>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -170,5 +186,15 @@ body {
     align-items: stretch;
 
     min-height: 100vh;
+}
+
+.math-display {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    text-align: center;
+}
+
+.math-inline {
+    white-space: nowrap;
 }
 </style>
