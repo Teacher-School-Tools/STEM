@@ -55,66 +55,124 @@ const currentPath = Astro.url.pathname;
 </html>
 
 <style>
-  :global(*) {
-    box-sizing: border-box;
-  }
+    /* =========================================
+       Global Styles
+    ========================================= */
 
-  :global(html),
-  :global(body) {
-    margin: 0;
-    min-height: 100%;
-    width: 100%;
-  }
+    :global(*) {
+        box-sizing: border-box;
+    }
 
-  .site-layout {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    width: 100%;
-  }
+    :global(html),
+    :global(body) {
+        margin: 0;
+        min-height: 100%;
+        width: 100%;
+    }
 
-  .main-container {
-    display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    flex: 1 0 auto;
-    align-items: stretch;
-    width: 100%;
-    min-width: 0;
-  }
+    body {
+        min-height: 100vh;
+    }
 
-  .sidebar-space {
-    grid-column: 1;
-    grid-row: 1;
-    position: relative;
-    width: 220px;
-    min-width: 0;
-    height: 100%;
-  }
+    /* =========================================
+       Overall Page Layout
+    ========================================= */
 
-  .page-content {
-    grid-column: 2;
-    grid-row: 1;
-    display: block;
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-    padding: 0 16px 2rem;
-  }
+    .site-layout {
+        display: flex;
+        flex-direction: column;
 
-  .content-wrapper {
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-  }
+        min-height: 100vh;
+        width: 100%;
+    }
 
-  body {
-    min-height: 100vh;
-  }
+    /* =========================================
+       Main Container
+    ========================================= */
 
-  .main-layout {
-    display: flex;
-    min-height: 100vh;
-    align-items: stretch;
-  }
+    .main-container {
+        display: grid;
+
+        /* Sidebar + Main Content */
+        grid-template-columns: 260px minmax(0, 1fr);
+
+        flex: 1 0 auto;
+        align-items: stretch;
+
+        width: 100%;
+        min-width: 0;
+
+        transition: grid-template-columns 0.25s ease;
+    }
+
+    /* Collapsed sidebar layout */
+
+    .main-container.sidebar-collapsed {
+        grid-template-columns: 44px minmax(0, 1fr);
+    }
+
+    /* Initial collapsed state before JavaScript runs */
+
+    :global(.sidebar-initially-collapsed) .main-container {
+        grid-template-columns: 44px minmax(0, 1fr);
+    }
+
+    /* =========================================
+       Sidebar Container
+    ========================================= */
+
+    .sidebar-space {
+        grid-column: 1;
+        grid-row: 1;
+
+        position: relative;
+
+        width: 100%;
+        min-width: 0;
+        height: 100%;
+    }
+
+    /* =========================================
+       Main Page Content
+    ========================================= */
+
+    .page-content {
+        grid-column: 2;
+        grid-row: 1;
+
+        display: block;
+
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+
+        padding: 0 16px 2rem;
+
+        transition: width 0.25s ease;
+    }
+
+    /* =========================================
+       Content Wrapper
+    ========================================= */
+
+    .content-wrapper {
+        width: 90%;
+        max-width: 1100px;
+
+        margin-left: auto;
+        margin-right: auto;
+
+        position: relative;
+    }
+
+    /* =========================================
+       Main Layout Compatibility
+    ========================================= */
+
+    .main-layout {
+        display: flex;
+        min-height: 100vh;
+        align-items: stretch;
+    }
+
 </style>

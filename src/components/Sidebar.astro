@@ -1,3 +1,4 @@
+
 ---
 const currentPath = decodeURIComponent(Astro.url.pathname);
 
@@ -22,7 +23,6 @@ const pageFiles = Object.keys(
 
 // Convert files into page objects
 const allPages = pageFiles.map(path => {
-
     const relativePath = path
         .replace("../pages/", "")
         .replace(/\.astro$/, "");
@@ -48,7 +48,7 @@ const currentPage = allPages.find(page =>
     normalizePath(page.route) === localPath
 );
 
-// Check whether viewing the main src/pages/index.astro
+// Check whether viewing the main index page
 const isMainIndex =
     currentPage?.filename === "index" &&
     currentPage?.directory === "/";
@@ -59,32 +59,29 @@ const currentDirectory = currentPage
     : "/";
 
 // Populate sidebar
-// Populate sidebar
 const sidebarPages = allPages
     .filter(page => {
-
-        // Main index: include all pages, including directory indexes
+        // Main index: include all directory pages
         if (isMainIndex) {
             return page.route !== "/";
         }
 
-        // Other pages: include all pages in the same directory
+        // Other pages: include pages in the same directory
         return page.directory === currentDirectory;
     })
     .map(page => {
-
         const numberMatch = page.filename.match(/^(\d+)-/);
 
-        // Give index pages a readable name
+        // Generate readable page names
         const name = page.filename === "index"
-    ? page.directory.split("/").filter(Boolean).pop()
-        ?.replace(/^\d+-/, "")
-        .replace(/[-_]/g, " ")
-        .replace(/\b\w/g, char => char.toUpperCase()) || "Home"
-    : page.filename
-        .replace(/^\d+-/, "")
-        .replace(/[-_]/g, " ")
-        .replace(/\b\w/g, char => char.toUpperCase());
+            ? page.directory.split("/").filter(Boolean).pop()
+                ?.replace(/^\d+-/, "")
+                .replace(/[-_]/g, " ")
+                .replace(/\b\w/g, char => char.toUpperCase()) || "Home"
+            : page.filename
+                .replace(/^\d+-/, "")
+                .replace(/[-_]/g, " ")
+                .replace(/\b\w/g, char => char.toUpperCase());
 
         return {
             name,
@@ -98,7 +95,6 @@ const sidebarPages = allPages
         };
     })
     .sort((a, b) => {
-
         // Group pages by directory on the main index
         if (isMainIndex && a.directory !== b.directory) {
             return a.directory.localeCompare(b.directory);
@@ -111,21 +107,35 @@ const sidebarPages = allPages
         return a.name.localeCompare(b.name);
     });
 ---
+
 <aside class="sidebar" id="sidebar">
 
-    <div class="sidebar-header" id="sidebar-toggle">
-    <span class="sidebar-title">Contents</span>
-    <span class="sidebar-toggle-arrow" id="toggle-arrow">☰</span>
-</div>
+    <div
+        class="sidebar-header"
+        id="sidebar-toggle"
+        role="button"
+        tabindex="0"
+        aria-label="Collapse sidebar"
+        aria-expanded="true"
+    >
+        <span class="sidebar-title">Contents</span>
+        <span class="sidebar-toggle-arrow" id="toggle-arrow">☰</span>
+    </div>
 
     <nav class="sidebar-nav">
         {sidebarPages.map(page => (
             <a
-    href={page.href}
-    class:list={["sidebar-link", { "index-page": page.isIndex }]}
->
-    {page.name}
-</a>
+                href={page.href}
+                class:list={[
+                    "sidebar-link",
+                    {
+                        "index-page": page.isIndex,
+                        "active": page.active
+                    }
+                ]}
+            >
+                {page.name}
+            </a>
         ))}
 
         {sidebarPages.length === 0 && (
@@ -136,53 +146,73 @@ const sidebarPages = allPages
 </aside>
 
 <script>
-    const sidebar = document.querySelector(".sidebar");
-const sidebarToggle = document.querySelector("#sidebar-toggle");
+    const sidebar = document.querySelector("#sidebar");
+    const sidebarToggle = document.querySelector("#sidebar-toggle");
+    const mainContainer = document.querySelector(".main-container");
 
-sidebarToggle?.addEventListener("click", () => {
-    sidebar?.classList.toggle("collapsed");
+    const STORAGE_KEY = "sidebarCollapsed";
 
-    const isCollapsed = sidebar?.classList.contains("collapsed");
+    // Restore saved sidebar state
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    const initiallyCollapsed = savedState === "true";
 
-    localStorage.setItem("sidebarCollapsed", isCollapsed ? "true" : "false");
-});
+    sidebar?.classList.toggle("collapsed", initiallyCollapsed);
 
-    // Update toggle appearance
+    mainContainer?.classList.toggle(
+        "sidebar-collapsed",
+        initiallyCollapsed
+    );
+
+    // Update accessibility information
     function updateToggle() {
         const collapsed = sidebar?.classList.contains("collapsed");
 
-        if (!toggle) return;
-
-        toggle.textContent = collapsed ? "›" : "‹";
-
-        toggle.setAttribute(
+        sidebarToggle?.setAttribute(
             "aria-expanded",
             String(!collapsed)
         );
 
-        toggle.setAttribute(
+        sidebarToggle?.setAttribute(
             "aria-label",
             collapsed ? "Expand sidebar" : "Collapse sidebar"
         );
     }
 
-    // Set initial appearance
-    updateToggle();
+    // Toggle sidebar
+    function toggleSidebar() {
+        sidebar?.classList.toggle("collapsed");
 
-    // Toggle and save state
-    toggle?.addEventListener("click", () => {
+        const collapsed = sidebar?.classList.contains("collapsed") ?? false;
 
-        const collapsed = sidebar?.classList.toggle("collapsed");
-
-        localStorage.setItem(
+        // Update main layout grid
+        mainContainer?.classList.toggle(
             "sidebar-collapsed",
+            collapsed
+        );
+
+        // Save state
+        localStorage.setItem(
+            STORAGE_KEY,
             String(collapsed)
         );
 
         updateToggle();
-    });
-</script>
+    }
 
+    // Click anywhere on header
+    sidebarToggle?.addEventListener("click", toggleSidebar);
+
+    // Keyboard accessibility
+    sidebarToggle?.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggleSidebar();
+        }
+    });
+
+    // Set initial accessibility state
+    updateToggle();
+</script>
 
 <style>
 /* =========================================
@@ -214,12 +244,21 @@ sidebarToggle?.addEventListener("click", () => {
     align-items: center;
     justify-content: space-between;
 
+    position: relative;
+
     min-height: 45px;
     padding: 12px;
     box-sizing: border-box;
 
     cursor: pointer;
+    user-select: none;
 }
+
+.sidebar-header:hover {
+    background: #e4eef8;
+}
+
+/* Header title */
 
 .sidebar-title {
     font-size: 1.1rem;
@@ -234,20 +273,16 @@ sidebarToggle?.addEventListener("click", () => {
         visibility 0s linear 0.3s;
 }
 
-.collapse-button {
-    border: none;
-    background: transparent;
-
-    font-size: 1.5rem;
-    cursor: pointer;
-
-    padding: 2px 8px;
-}
+/* Toggle symbol */
 
 .sidebar-toggle-arrow {
     display: inline-block;
-    transform: rotate(-90deg);
+    flex-shrink: 0;
 
+    font-size: 1.3rem;
+    line-height: 1;
+
+    transform: rotate(90deg);
     transition: transform 0.3s ease;
 }
 
@@ -267,6 +302,8 @@ sidebarToggle?.addEventListener("click", () => {
     box-sizing: border-box;
     gap: 3px;
 }
+
+/* Navigation links */
 
 .sidebar-link {
     display: block;
@@ -288,10 +325,14 @@ sidebarToggle?.addEventListener("click", () => {
     background: #dce8f5;
 }
 
+/* Active page */
+
 .sidebar-link.active {
     background: #c9dced;
     font-weight: bold;
 }
+
+/* Directory index pages */
 
 .sidebar-link.index-page {
     font-weight: bold;
@@ -306,33 +347,58 @@ sidebarToggle?.addEventListener("click", () => {
     min-width: 44px;
 }
 
-/* Hide navigation when collapsed */
+/* Hide navigation links */
 
 .sidebar.collapsed .sidebar-link,
 .sidebar.collapsed .sidebar-nav p {
     display: none;
 }
 
-/* Header alignment */
+/* Center header */
 
 .sidebar.collapsed .sidebar-header {
     justify-content: center;
     padding: 5px 0;
 }
 
-.sidebar.collapsed .collapse-button {
-    padding: 5px;
-}
-
-/* Hide title when collapsed */
+/* Hide title without affecting header height */
 
 .sidebar.collapsed .sidebar-title {
+    position: absolute;
+
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
 
     transition:
         opacity 0.2s ease,
         visibility 0s linear 0.3s;
 }
 
+/* Keep toggle symbol visible */
+
+.sidebar.collapsed .sidebar-toggle-arrow {
+    display: inline-block;
+    visibility: visible;
+    opacity: 1;
+
+    transform: rotate(0deg);
+}
+
+/* =========================================
+   Expanded Sidebar
+========================================= */
+
+.sidebar:not(.collapsed) .sidebar-title {
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+        opacity 0.2s ease 0.3s,
+        visibility 0s linear 0.3s;
+}
+
+.sidebar:not(.collapsed) .sidebar-toggle-arrow {
+    transform: rotate(90deg);
+}
 </style>
