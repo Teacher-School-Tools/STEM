@@ -147,10 +147,10 @@ const { gameName, gameDir } = Astro.props;
             </label>
 
             <select id="levelSelector">
+                <option value="level0">Practice</option>
                 <option value="level1">Level 1</option>
                 <option value="level2">Level 2</option>
                 <option value="level3">Level 3</option>
-                <option value="level4">Level 4</option>
             </select>
 
         </div>
@@ -163,7 +163,7 @@ const { gameName, gameDir } = Astro.props;
         </div>
 
         <!-- Level 4 Controls -->
-        <div id="level4-controls" class="level4-controls">
+        <div id="level0-controls" class="level0-controls">
 
             <div class="control-group">
 
@@ -225,7 +225,7 @@ const pauseButton = document.querySelector("#pauseGame");
 const restartButton = document.querySelector("#restartGame");
 
 const levelSelector = document.querySelector("#levelSelector");
-const level4Controls = document.querySelector("#level4-controls");
+const level0Controls = document.querySelector("#level0-controls");
 
 const temperatureSlider = document.querySelector("#temperature");
 const temperatureValue = document.querySelector("#temperatureValue");
@@ -246,6 +246,13 @@ const closeInstructions = document.querySelector("#closeInstructions");
 // =========================================
 
 const levelDescriptions = {
+
+    level0: {
+        title: "Practice Mode",
+        description: `
+            Customize and learn to control your cannon.
+        `
+    },
 
     level1: {
         title: "Level 1: Introduction",
@@ -273,15 +280,6 @@ const levelDescriptions = {
             You cannot aim the cannon. Time your shots wisely.
         `
     },
-
-    level4: {
-        title: "Level 4: Sandbox",
-        description: `
-            The speed and quantity of the atoms is up to you.
-
-            Have fun!
-        `
-    }
 
 };
 
@@ -362,18 +360,18 @@ function updateLevelDescription(levelName) {
 
 function updateLevelControls() {
 
-    const isLevel4 =
+    const isLevel0 =
         levelSelector instanceof HTMLSelectElement &&
-        levelSelector.value === "level4";
+        levelSelector.value === "level0";
 
     // Only show Level 4 controls in Level 4
-    if (level4Controls instanceof HTMLElement) {
-        level4Controls.style.display = isLevel4 ? "flex" : "none";
+    if (level0Controls instanceof HTMLElement) {
+        level0Controls.style.display = isLevel0 ? "flex" : "none";
     }
 
 }
 
-function resetLevel4Controls() {
+function resetLevel0Controls() {
 
     if (temperatureSlider instanceof HTMLInputElement) {
         temperatureSlider.value = "298";
@@ -461,9 +459,9 @@ function initializeLevelSelection(game) {
             game.setLevel(selectedLevel);
         }
 
-        // Reset sandbox settings when entering Level 4
-        if (selectedLevel === "level4") {
-            resetLevel4Controls();
+        // Reset sandbox settings when entering Level 0
+        if (selectedLevel === "level0") {
+            resetLevel0Controls();
         }
 
         if (canvas instanceof HTMLCanvasElement) {
@@ -495,7 +493,7 @@ function initializeTemperatureControl(game) {
 
         if (
             levelSelector instanceof HTMLSelectElement &&
-            levelSelector.value === "level4"
+            levelSelector.value === "level0"
         ) {
             game.setTemperature(temperature);
         }
@@ -527,7 +525,7 @@ function initializeAtomCountControl(game) {
 
         if (
             levelSelector instanceof HTMLSelectElement &&
-            levelSelector.value === "level4"
+            levelSelector.value === "level0"
         ) {
             game.setAtomCount(count);
         }
@@ -866,7 +864,7 @@ initializeKeyboardControls();
 
 /* Level-Specific Controls */
 
-.level4-controls {
+.level0-controls {
     display: none;
     flex-direction: column;
     gap: 10px;
