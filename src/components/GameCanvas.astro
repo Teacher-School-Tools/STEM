@@ -7,6 +7,10 @@ interface Props {
 const { gameName, gameDir } = Astro.props;
 ---
 
+<!-- =========================================
+     Game Header
+========================================= -->
+
 <div class="game-header">
     <h1>{gameName}</h1>
 
@@ -20,9 +24,13 @@ const { gameName, gameDir } = Astro.props;
     </button>
 </div>
 
+<!-- =========================================
+     Main Game Layout
+========================================= -->
+
 <div class="game-container">
 
-    <!-- Instructions popup -->
+    <!-- Instructions Modal -->
     <div
         class="instructions-modal"
         id="instructionsModal"
@@ -56,20 +64,87 @@ const { gameName, gameDir } = Astro.props;
         </div>
     </div>
 
-    <!-- Game canvas -->
-    <canvas
-        id="gameCanvas"
-        width="600"
-        height="400"
-        tabindex="0"
-        aria-label="Nuclear physics game"
-    ></canvas>
+    <!-- Level Description -->
+    <section id="level-description">
 
-    <!-- Game controls -->
-    <div class="game-controls">
+        <h2 id="level-description-title">
+            Level 1
+        </h2>
 
+        <p id="level-description-text">
+            Welcome to Level 1.
+        </p>
+
+    </section>
+
+    <!-- Canvas and Cannon Settings -->
+    <section class="game-canvas-container">
+
+        <canvas
+            id="gameCanvas"
+            width="600"
+            height="400"
+            tabindex="0"
+            aria-label="Nuclear physics game"
+        ></canvas>
+
+        <!-- Cannon Customization -->
+        <div class="cannon-settings">
+
+            <h3>Cannon Customization</h3>
+
+            <div class="settings-row">
+
+                <div class="setting">
+                    <label for="cannonColor">
+                        Cannon Colour
+                    </label>
+
+                    <input
+                        type="color"
+                        id="cannonColor"
+                        value="#555555"
+                    />
+                </div>
+
+                <div class="setting">
+                    <label for="cannonEmoji">
+                        Cannon Emoji
+                    </label>
+
+                    <select id="cannonEmoji">
+                        <option value="">None</option>
+                        <option value="🚀">Rocket</option>
+                        <option value="🔥">Fire</option>
+                        <option value="⭐">Star</option>
+                        <option value="💥">Explosion</option>
+                        <option value="🐱">Cat</option>
+                        <option value="👾">Alien</option>
+                        <option value="⚡">Lightning</option>
+                        <option value="🌈">Rainbow</option>
+                        <option value="☢️">Radioactive</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button id="resetCannon">
+                Reset Appearance
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- Game Controls -->
+    <section class="game-controls">
+
+        <!-- Level Selection -->
         <div class="control-group">
-            <label for="levelSelector">Select Level</label>
+
+            <label for="levelSelector">
+                Select Level
+            </label>
 
             <select id="levelSelector">
                 <option value="level1">Level 1</option>
@@ -77,18 +152,21 @@ const { gameName, gameDir } = Astro.props;
                 <option value="level3">Level 3</option>
                 <option value="level4">Level 4</option>
             </select>
+
         </div>
 
+        <!-- Game Buttons -->
         <div class="game-buttons">
             <button id="startGame">Start</button>
             <button id="pauseGame">Pause</button>
             <button id="restartGame">Restart</button>
         </div>
 
-        <!-- Level 4 controls -->
+        <!-- Level 4 Controls -->
         <div id="level4-controls" class="level4-controls">
 
             <div class="control-group">
+
                 <label for="temperature">
                     Temperature:
                     <span id="temperatureValue">298 K</span>
@@ -102,9 +180,11 @@ const { gameName, gameDir } = Astro.props;
                     value="298"
                     step="1"
                 />
+
             </div>
 
             <div class="control-group">
+
                 <label for="atomCount">
                     Number of Atoms:
                     <span id="atomCountValue">5</span>
@@ -118,15 +198,21 @@ const { gameName, gameDir } = Astro.props;
                     value="5"
                     step="1"
                 />
+
             </div>
 
         </div>
 
-    </div>
+    </section>
+
 </div>
 
+<!-- =========================================
+     JavaScript
+========================================= -->
+
 <script>
-import Game from "../game/projects/NuclearGame.js";
+import NuclearGame from "../game/projects/NuclearGame.js";
 
 // =========================================
 // DOM Elements
@@ -147,12 +233,60 @@ const temperatureValue = document.querySelector("#temperatureValue");
 const atomSlider = document.querySelector("#atomCount");
 const atomValue = document.querySelector("#atomCountValue");
 
+const cannonColor = document.querySelector("#cannonColor");
+const cannonEmoji = document.querySelector("#cannonEmoji");
+const resetCannon = document.querySelector("#resetCannon");
+
 const instructionsModal = document.querySelector("#instructionsModal");
 const openInstructions = document.querySelector("#openInstructions");
 const closeInstructions = document.querySelector("#closeInstructions");
 
 // =========================================
-// Instructions
+// Level Configuration
+// =========================================
+
+const levelDescriptions = {
+
+    level1: {
+        title: "Level 1: Introduction",
+        description: `
+            Fire the least number of neutrons at the atoms to induce nuclear fission.
+        `
+    },
+
+    level2: {
+        title: "Level 2: Increased Difficulty",
+        description: `
+            Atoms are faster and have more health.
+
+            Plan your shots carefully and try to
+            minimize the number of neutrons used.
+        `
+    },
+
+    level3: {
+        title: "Level 3: Advanced Challenge",
+        description: `
+            You are now facing a more challenging
+            and realistic simulation.
+
+            You cannot aim the cannon. Time your shots wisely.
+        `
+    },
+
+    level4: {
+        title: "Level 4: Sandbox",
+        description: `
+            The speed and quantity of the atoms is up to you.
+
+            Have fun!
+        `
+    }
+
+};
+
+// =========================================
+// Instructions Modal
 // =========================================
 
 function initializeInstructions() {
@@ -187,22 +321,226 @@ function initializeInstructions() {
     });
 
     document.addEventListener("keydown", (event) => {
+
         if (
             event.key === "Escape" &&
             instructionsModal.style.display === "flex"
         ) {
             closeModal();
         }
+
     });
 
+    // Display instructions when the game first loads
     openModal();
+
 }
 
 // =========================================
-// Game Initialization
+// Level Description
 // =========================================
 
-function initializeGame() {
+function updateLevelDescription(levelName) {
+
+    const level = levelDescriptions[levelName];
+
+    const title = document.querySelector("#level-description-title");
+    const description = document.querySelector("#level-description-text");
+
+    if (!level || !title || !description) {
+        return;
+    }
+
+    title.textContent = level.title;
+    description.textContent = level.description.trim();
+
+}
+
+// =========================================
+// Level Controls
+// =========================================
+
+function updateLevelControls() {
+
+    const isLevel4 =
+        levelSelector instanceof HTMLSelectElement &&
+        levelSelector.value === "level4";
+
+    // Only show Level 4 controls in Level 4
+    if (level4Controls instanceof HTMLElement) {
+        level4Controls.style.display = isLevel4 ? "flex" : "none";
+    }
+
+}
+
+function resetLevel4Controls() {
+
+    if (temperatureSlider instanceof HTMLInputElement) {
+        temperatureSlider.value = "298";
+    }
+
+    if (temperatureValue) {
+        temperatureValue.textContent = "298 K";
+    }
+
+    if (atomSlider instanceof HTMLInputElement) {
+        atomSlider.value = "5";
+    }
+
+    if (atomValue) {
+        atomValue.textContent = "5";
+    }
+
+}
+
+// =========================================
+// Cannon Customization
+// =========================================
+
+function initializeCannonCustomization(game) {
+
+    // Change cannon colour
+    if (cannonColor instanceof HTMLInputElement) {
+
+        cannonColor.addEventListener("input", () => {
+            game.setCannonColor(cannonColor.value);
+        });
+
+    }
+
+    // Change cannon emoji
+    if (cannonEmoji instanceof HTMLSelectElement) {
+
+        cannonEmoji.addEventListener("change", () => {
+            game.setCannonEmoji(cannonEmoji.value);
+        });
+
+    }
+
+    // Reset cannon appearance
+    if (resetCannon instanceof HTMLButtonElement) {
+
+        resetCannon.addEventListener("click", () => {
+
+            game.resetCannonAppearance();
+
+            if (cannonColor instanceof HTMLInputElement) {
+                cannonColor.value = "#555555";
+            }
+
+            if (cannonEmoji instanceof HTMLSelectElement) {
+                cannonEmoji.value = "";
+            }
+
+        });
+
+    }
+
+}
+
+// =========================================
+// Level Selection
+// =========================================
+
+function initializeLevelSelection(game) {
+
+    if (!(levelSelector instanceof HTMLSelectElement)) {
+        return;
+    }
+
+    levelSelector.addEventListener("change", () => {
+
+        const selectedLevel = levelSelector.value;
+
+        // Update interface
+        updateLevelControls();
+        updateLevelDescription(selectedLevel);
+
+        // Load selected level
+        if (typeof game.setLevel === "function") {
+            game.setLevel(selectedLevel);
+        }
+
+        // Reset sandbox settings when entering Level 4
+        if (selectedLevel === "level4") {
+            resetLevel4Controls();
+        }
+
+        if (canvas instanceof HTMLCanvasElement) {
+            canvas.focus();
+        }
+
+    });
+
+}
+
+// =========================================
+// Temperature Control
+// =========================================
+
+function initializeTemperatureControl(game) {
+
+    if (
+        !(temperatureSlider instanceof HTMLInputElement) ||
+        !temperatureValue
+    ) {
+        return;
+    }
+
+    temperatureSlider.addEventListener("input", () => {
+
+        const temperature = Number(temperatureSlider.value);
+
+        temperatureValue.textContent = `${temperature} K`;
+
+        if (
+            levelSelector instanceof HTMLSelectElement &&
+            levelSelector.value === "level4"
+        ) {
+            game.setTemperature(temperature);
+        }
+
+    });
+
+}
+
+// =========================================
+// Atom Count Control
+// =========================================
+
+function initializeAtomCountControl(game) {
+
+    if (
+        !(atomSlider instanceof HTMLInputElement) ||
+        !atomValue
+    ) {
+        return;
+    }
+
+    atomSlider.addEventListener("input", () => {
+        atomValue.textContent = atomSlider.value;
+    });
+
+    atomSlider.addEventListener("change", () => {
+
+        const count = Number(atomSlider.value);
+
+        if (
+            levelSelector instanceof HTMLSelectElement &&
+            levelSelector.value === "level4"
+        ) {
+            game.setAtomCount(count);
+        }
+
+    });
+
+}
+
+// =========================================
+// Game Buttons
+// =========================================
+
+function initializeGameButtons(game) {
 
     if (
         !(canvas instanceof HTMLCanvasElement) ||
@@ -213,125 +551,11 @@ function initializeGame() {
         return;
     }
 
-    const game = new Game(canvas);
-
-    // -------------------------------------
-    // Level Controls
-    // -------------------------------------
-
-    function updateLevelControls() {
-
-        if (
-            levelSelector instanceof HTMLSelectElement &&
-            level4Controls instanceof HTMLElement
-        ) {
-            level4Controls.style.display =
-                levelSelector.value === "level4" ? "flex" : "none";
-        }
-    }
-
-    function resetLevel4Controls() {
-
-        if (temperatureSlider instanceof HTMLInputElement) {
-            temperatureSlider.value = "298";
-        }
-
-        if (temperatureValue) {
-            temperatureValue.textContent = "298 K";
-        }
-
-        if (atomSlider instanceof HTMLInputElement) {
-            atomSlider.value = "5";
-        }
-
-        if (atomValue) {
-            atomValue.textContent = "5";
-        }
-    }
-
-    // -------------------------------------
-    // Level Selection
-    // -------------------------------------
-
-    if (levelSelector instanceof HTMLSelectElement) {
-
-        levelSelector.addEventListener("change", () => {
-
-            const selectedLevel = levelSelector.value;
-
-            updateLevelControls();
-
-            if (typeof game.setLevel === "function") {
-                game.setLevel(selectedLevel);
-            }
-
-            if (selectedLevel === "level4") {
-                resetLevel4Controls();
-            }
-
-            canvas.focus();
-        });
-    }
-
-    // -------------------------------------
-    // Temperature
-    // -------------------------------------
-
-    if (
-        temperatureSlider instanceof HTMLInputElement &&
-        temperatureValue
-    ) {
-
-        temperatureSlider.addEventListener("input", () => {
-
-            const temperature = Number(temperatureSlider.value);
-
-            temperatureValue.textContent = `${temperature} K`;
-
-            if (
-                levelSelector instanceof HTMLSelectElement &&
-                levelSelector.value === "level4"
-            ) {
-                game.setTemperature(temperature);
-            }
-        });
-    }
-
-    // -------------------------------------
-    // Atom Count
-    // -------------------------------------
-
-    if (
-        atomSlider instanceof HTMLInputElement &&
-        atomValue
-    ) {
-
-        atomSlider.addEventListener("input", () => {
-
-            atomValue.textContent = atomSlider.value;
-        });
-
-        atomSlider.addEventListener("change", () => {
-
-            const count = Number(atomSlider.value);
-
-            if (
-                levelSelector instanceof HTMLSelectElement &&
-                levelSelector.value === "level4"
-            ) {
-                game.setAtomCount(count);
-            }
-        });
-    }
-
-    // -------------------------------------
-    // Game Buttons
-    // -------------------------------------
-
     canvas.addEventListener("click", () => {
         canvas.focus();
     });
 
+    // Start
     startButton.addEventListener("click", () => {
 
         if (!game.running) {
@@ -339,8 +563,10 @@ function initializeGame() {
         }
 
         canvas.focus();
+
     });
 
+    // Pause / Resume
     pauseButton.addEventListener("click", () => {
 
         if (game.state === "playing") {
@@ -351,19 +577,21 @@ function initializeGame() {
         }
 
         canvas.focus();
+
     });
 
+    // Restart
     restartButton.addEventListener("click", () => {
 
         game.restart();
         canvas.focus();
+
     });
 
-    updateLevelControls();
 }
 
 // =========================================
-// Keyboard Handling
+// Keyboard Controls
 // =========================================
 
 function initializeKeyboardControls() {
@@ -400,11 +628,49 @@ function initializeKeyboardControls() {
         if (gameKeys.includes(event.key)) {
             event.preventDefault();
         }
+
     });
+
 }
 
 // =========================================
-// Initialize
+// Game Initialization
+// =========================================
+
+function initializeGame() {
+
+    if (
+        !(canvas instanceof HTMLCanvasElement) ||
+        !(startButton instanceof HTMLButtonElement) ||
+        !(pauseButton instanceof HTMLButtonElement) ||
+        !(restartButton instanceof HTMLButtonElement)
+    ) {
+        return;
+    }
+
+    // Create game instance
+    const game = new NuclearGame(canvas);
+
+    // Initialize interface controls
+    initializeCannonCustomization(game);
+    initializeLevelSelection(game);
+    initializeTemperatureControl(game);
+    initializeAtomCountControl(game);
+    initializeGameButtons(game);
+
+    // Set initial interface state
+    updateLevelControls();
+
+    updateLevelDescription(
+        levelSelector instanceof HTMLSelectElement
+            ? levelSelector.value
+            : "level1"
+    );
+
+}
+
+// =========================================
+// Initialize Everything
 // =========================================
 
 initializeInstructions();
@@ -414,6 +680,23 @@ initializeKeyboardControls();
 </script>
 
 <style>
+
+/* =========================================
+   Theme Variables
+========================================= */
+
+:root {
+    --game-border: #ccc;
+    --game-background: #f5f5f5;
+    --game-text: #333;
+
+    --game-radius: 8px;
+    --game-gap: 20px;
+
+    --description-width: 180px;
+    --controls-width: 180px;
+    --canvas-max-width: 600px;
+}
 
 /* =========================================
    Game Header
@@ -430,8 +713,6 @@ initializeKeyboardControls();
     margin: 0;
 }
 
-/* Instructions button */
-
 .instructions-button {
     display: flex;
     align-items: center;
@@ -439,7 +720,6 @@ initializeKeyboardControls();
 
     width: 22px;
     height: 22px;
-
     padding: 0;
 
     border: 2px solid currentColor;
@@ -454,7 +734,6 @@ initializeKeyboardControls();
     font-style: italic;
 
     cursor: pointer;
-
     transition: background-color 0.2s, color 0.2s;
 }
 
@@ -464,18 +743,18 @@ initializeKeyboardControls();
 }
 
 /* =========================================
-   Game Layout
+   Main Game Layout
 ========================================= */
 
 .game-container {
     display: grid;
 
     grid-template-columns:
-        minmax(0, 1fr)
-        minmax(0, 600px)
-        minmax(180px, 1fr);
+        minmax(var(--description-width), 1fr)
+        minmax(0, var(--canvas-max-width))
+        minmax(var(--controls-width), 1fr);
 
-    gap: 20px;
+    gap: var(--game-gap);
 
     width: 95%;
     margin: 2rem auto;
@@ -483,18 +762,56 @@ initializeKeyboardControls();
     align-items: start;
 }
 
-/* Game canvas */
+/* =========================================
+   Level Description
+========================================= */
 
-canvas {
+#level-description {
+    grid-column: 1;
+
+    padding: 20px;
+
+    background: var(--game-background);
+    border: 1px solid var(--game-border);
+    border-radius: var(--game-radius);
+
+    box-sizing: border-box;
+}
+
+#level-description h2 {
+    margin: 0 0 15px;
+    font-size: 20px;
+}
+
+#level-description p {
+    margin: 0;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+/* =========================================
+   Game Canvas Container
+========================================= */
+
+.game-canvas-container {
     grid-column: 2;
 
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+#gameCanvas {
     display: block;
 
     width: 100%;
     height: auto;
 
-    border: 2px solid #333;
-    background: #f5f5f5;
+    border: 2px solid var(--game-text);
+    background: var(--game-background);
 }
 
 /* =========================================
@@ -539,7 +856,7 @@ canvas {
     cursor: pointer;
 }
 
-/* Game buttons */
+/* Game Buttons */
 
 .game-buttons {
     display: flex;
@@ -547,7 +864,7 @@ canvas {
     gap: 10px;
 }
 
-/* Level 4 controls */
+/* Level-Specific Controls */
 
 .level4-controls {
     display: none;
@@ -556,22 +873,101 @@ canvas {
 }
 
 /* =========================================
-   Instructions Popup
+   Cannon Customization
+========================================= */
+
+.cannon-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+    padding: 16px;
+
+    background: var(--game-background);
+    border: 1px solid var(--game-border);
+    border-radius: var(--game-radius);
+
+    box-sizing: border-box;
+}
+
+.cannon-settings h3 {
+    margin: 0 0 5px;
+    font-size: 17px;
+}
+
+.settings-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.setting {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+}
+
+.setting label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.setting input[type="color"] {
+    width: 65px;
+    height: 38px;
+    padding: 2px;
+
+    border: 1px solid var(--game-border);
+    border-radius: 5px;
+
+    background: white;
+    cursor: pointer;
+}
+
+.setting select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.cannon-settings button {
+    width: 100%;
+    padding: 9px;
+
+    border: 1px solid #bbb;
+    border-radius: 5px;
+
+    background: white;
+    color: var(--game-text);
+
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cannon-settings button:hover {
+    background: #e5e5e5;
+}
+
+/* =========================================
+   Instructions Modal
 ========================================= */
 
 .instructions-modal {
     display: none;
 
     position: fixed;
-    z-index: 1000;
     inset: 0;
+    z-index: 1000;
 
-    background: rgba(0, 0, 0, 0.7);
-
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
     padding: 20px;
+
+    background: rgba(0, 0, 0, 0.7);
 }
 
 .instructions-content {
@@ -592,8 +988,7 @@ canvas {
 }
 
 .instructions-content h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
+    margin: 0 0 20px;
 }
 
 .close-instructions {
@@ -601,8 +996,8 @@ canvas {
     top: 10px;
     right: 15px;
 
-    background: none;
     border: none;
+    background: none;
 
     font-size: 28px;
     cursor: pointer;
@@ -613,40 +1008,61 @@ canvas {
 }
 
 /* =========================================
-   Responsive Layout
+   Tablet Layout
 ========================================= */
 
 @media (max-width: 1000px) {
 
     .game-container {
-        grid-template-columns: minmax(0, 1fr) minmax(180px, 300px);
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(0, 2fr);
     }
 
-    canvas {
+    #level-description {
         grid-column: 1;
     }
 
-    .game-controls {
+    .game-canvas-container {
         grid-column: 2;
     }
+
+    .game-controls {
+        grid-column: 1 / -1;
+
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
 }
+
+/* =========================================
+   Mobile Layout
+========================================= */
 
 @media (max-width: 650px) {
 
     .game-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         width: 95%;
     }
 
-    canvas {
+    #level-description,
+    .game-canvas-container,
+    .game-controls {
         grid-column: 1;
     }
 
     .game-controls {
-        grid-column: 1;
         max-width: 400px;
-        margin: auto;
+        margin: 0 auto;
     }
+
+    .settings-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
 }
 
 </style>

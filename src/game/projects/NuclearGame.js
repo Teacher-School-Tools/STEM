@@ -12,28 +12,28 @@ const LEVELS = {
         atomCount: 5,
         temperature: 298,
         atomHealth: 1,
-        background: "#f5f5f5"
+        background: "#f5f5f5",
     },
 
     level2: {
         atomCount: 5,
         temperature: 398,
         atomHealth: 2,
-        background: "#e8f4ff"
+        background: "#e8f4ff",
     },
 
     level3: {
         atomCount: 5,
         temperature: 598,
         atomHealth: 3,
-        background: "#fff0e0"
+        background: "#fff0e0",
     },
     
     level4: {
         atomCount: 5,
         temperature: 298,
         atomHealth: 1,
-        background: "#f5f5f5"
+        background: "#f5f5f5",
     }
 };
 
@@ -67,7 +67,11 @@ export default class NuclearGame extends Game {
             y: canvas.height,
             angle: -Math.PI / 2,
             rotationSpeed: 2,
-            barrelLength: 35
+            barrelLength: 50,
+
+            // Customization
+            color: "#555555",
+            emoji: ""
         };
 
         // Projectile settings
@@ -107,6 +111,25 @@ export default class NuclearGame extends Game {
 
     showCustomizationControls() {
         return this.currentLevel === "level4";
+    }
+
+    // =========================================
+    // Cannon Customization
+    // =========================================
+
+    setCannonColor(color) {
+    if (!/^#[0-9A-Fa-f]{6}$/.test(color)) return;
+
+        this.cannon.color = color;
+    }
+
+    setCannonEmoji(emoji) {
+        this.cannon.emoji = emoji;
+    }
+
+    resetCannonAppearance() {
+        this.cannon.color = "#555555";
+        this.cannon.emoji = "";
     }
 
     start() {
@@ -286,6 +309,11 @@ export default class NuclearGame extends Game {
 
     updateCannon(deltaTime) {
 
+        this.updateFiring(deltaTime);
+
+        if (this.currentLevel === "level3") {
+        return;
+        }
         const speed = this.cannon.rotationSpeed;
 
         // Horizontal rotation
@@ -312,7 +340,6 @@ export default class NuclearGame extends Game {
             Math.min(-0.2, this.cannon.angle)
         );
 
-        this.updateFiring(deltaTime);
     }
 
     updateFiring(deltaTime) {
@@ -700,18 +727,22 @@ export default class NuclearGame extends Game {
         ctx.restore();
     }
 
+    
     drawCannon() {
 
         const ctx = this.ctx;
         const cannon = this.cannon;
 
-        // Draw cannon barrel
+        // =====================================
+        // Cannon Barrel
+        // =====================================
+
         ctx.save();
 
         ctx.translate(cannon.x, cannon.y);
         ctx.rotate(cannon.angle);
 
-        ctx.fillStyle = "#444";
+        ctx.fillStyle = cannon.color;
         ctx.fillRect(
             0,
             -8,
@@ -729,26 +760,57 @@ export default class NuclearGame extends Game {
 
         ctx.restore();
 
-        // Draw cannon base
+        // =====================================
+        // Cannon Semicircular Base
+        // =====================================
+
         ctx.beginPath();
 
         ctx.arc(
             cannon.x,
             cannon.y,
-            18,
+            30,
             Math.PI,
             0
         );
 
-        ctx.fillStyle = "#555";
+        ctx.fillStyle = cannon.color;
         ctx.fill();
 
         ctx.strokeStyle = "black";
         ctx.stroke();
 
-        // Draw trajectory guide
+        // =====================================
+        // Cannon Emoji
+        // =====================================
+
+        if (cannon.emoji) {
+
+            ctx.save();
+
+            ctx.font = "18px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            // Position emoji in the centre of the semicircle
+            ctx.fillText(
+                cannon.emoji,
+                cannon.x,
+                cannon.y - 9
+            );
+
+            ctx.restore();
+
+        }
+
+        // =====================================
+        // Trajectory
+        // =====================================
+
         this.drawTrajectory();
+
     }
+
 
     drawTrajectory() {
 
@@ -883,6 +945,5 @@ export default class NuclearGame extends Game {
         this.state = "menu";
         this.running = false;
 
-        this.start();
     }
 }
