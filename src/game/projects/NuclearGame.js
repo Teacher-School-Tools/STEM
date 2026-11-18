@@ -1,13 +1,19 @@
-import Game from "../core/Game.js";
-import Input from "../core/Input.js";
-import Entity from "../core/Entity.js";
-import Score from "../core/Score.js";
+import Game from "../systems/Game.js";
+import Input from "../systems/Input.js";
+import Entity from "../systems/Entity.js";
+import Score from "../systems/Score.js";
 
 // =========================================
 // Level Configuration
 // =========================================
 
 const LEVELS = {
+    level0: {
+        atomCount: 5,
+        temperature: 298,
+        atomHealth: 1,
+        background: "#f5f5f5",
+    },
     level1: {
         atomCount: 5,
         temperature: 298,
@@ -29,12 +35,6 @@ const LEVELS = {
         background: "#fff0e0",
     },
     
-    level4: {
-        atomCount: 5,
-        temperature: 298,
-        atomHealth: 1,
-        background: "#f5f5f5",
-    }
 };
 
 export default class NuclearGame extends Game {
@@ -110,7 +110,7 @@ export default class NuclearGame extends Game {
     }
 
     showCustomizationControls() {
-        return this.currentLevel === "level4";
+        return this.currentLevel === "level0";
     }
 
     // =========================================
@@ -236,7 +236,7 @@ export default class NuclearGame extends Game {
     setAtomCount(number) {
 
         // Only allow customization on Level 4
-        if (this.currentLevel !== "level4") return;
+        if (this.currentLevel !== "level0") return;
 
         const count = Number(number);
 
