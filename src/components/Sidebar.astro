@@ -220,15 +220,15 @@ const sidebarPages = allPages
 ========================================= */
 
 .sidebar {
+    display: flex;
+    flex-direction: column;
+
     width: 260px;
     min-width: 260px;
     height: 100%;
 
-    display: flex;
-    flex-direction: column;
-
-    background: aliceblue;
     overflow: hidden;
+    background: aliceblue;
 
     transition:
         width 0.25s ease,
@@ -245,11 +245,10 @@ const sidebarPages = allPages
     justify-content: space-between;
 
     position: relative;
-
     min-height: 45px;
     padding: 12px;
-    box-sizing: border-box;
 
+    box-sizing: border-box;
     cursor: pointer;
     user-select: none;
 }
@@ -296,11 +295,11 @@ const sidebarPages = allPages
     align-items: stretch;
 
     width: 100%;
-    overflow-y: auto;
-
     padding: 5px 10px;
-    box-sizing: border-box;
     gap: 3px;
+
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 
 /* Navigation links */
@@ -308,9 +307,9 @@ const sidebarPages = allPages
 .sidebar-link {
     display: block;
     width: 100%;
-    box-sizing: border-box;
-
     padding: 10px 12px;
+
+    box-sizing: border-box;
 
     color: #333;
     text-decoration: none;
@@ -318,7 +317,15 @@ const sidebarPages = allPages
     border-radius: 5px;
     font-size: 0.95rem;
     line-height: 1.4;
+
     white-space: normal;
+
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+        opacity 0.2s ease 0.3s,
+        visibility 0s linear 0.3s;
 }
 
 .sidebar-link:hover {
@@ -347,38 +354,40 @@ const sidebarPages = allPages
     min-width: 44px;
 }
 
-/* Hide navigation links */
-
-.sidebar.collapsed .sidebar-link,
-.sidebar.collapsed .sidebar-nav p {
-    display: none;
-}
-
-/* Center header */
+/* Center header content */
 
 .sidebar.collapsed .sidebar-header {
     justify-content: center;
     padding: 5px 0;
 }
 
-/* Hide title without affecting header height */
+/* Hide header title immediately */
 
 .sidebar.collapsed .sidebar-title {
-    position: absolute;
+    opacity: 0;
+    visibility: hidden;
 
+    transition:
+        opacity 0s,
+        visibility 0s;
+}
+
+/* Hide navigation text immediately */
+
+.sidebar.collapsed .sidebar-link,
+.sidebar.collapsed .sidebar-nav p {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
 
     transition:
-        opacity 0.2s ease,
-        visibility 0s linear 0.3s;
+        opacity 0s,
+        visibility 0s;
 }
 
 /* Keep toggle symbol visible */
 
 .sidebar.collapsed .sidebar-toggle-arrow {
-    display: inline-block;
     visibility: visible;
     opacity: 1;
 
@@ -389,7 +398,9 @@ const sidebarPages = allPages
    Expanded Sidebar
 ========================================= */
 
-.sidebar:not(.collapsed) .sidebar-title {
+.sidebar:not(.collapsed) .sidebar-title,
+.sidebar:not(.collapsed) .sidebar-link,
+.sidebar:not(.collapsed) .sidebar-nav p {
     opacity: 1;
     visibility: visible;
 
@@ -398,7 +409,10 @@ const sidebarPages = allPages
         visibility 0s linear 0.3s;
 }
 
+/* Rotate toggle symbol */
+
 .sidebar:not(.collapsed) .sidebar-toggle-arrow {
     transform: rotate(90deg);
 }
+
 </style>
