@@ -16,13 +16,15 @@ export default class Game {
 
     start() {
         this.state = "playing";
-        this.running = true;
 
+        if (this.running) {
+            return;
+        }
+
+        this.running = true;
         this.lastTime = performance.now();
 
-        requestAnimationFrame(
-            (time) => this.loop(time)
-        );
+        requestAnimationFrame((time) => this.loop(time));
     }
 
     loop(time) {

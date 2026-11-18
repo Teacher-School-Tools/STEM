@@ -1,4 +1,3 @@
-
 export default class Collision {
 
     static check(a, b) {
