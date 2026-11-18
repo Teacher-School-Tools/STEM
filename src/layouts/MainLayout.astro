@@ -56,7 +56,7 @@ const currentPath = Astro.url.pathname;
 
 <style>
 /* =========================================
-    Global Styles
+   Global Styles
 ========================================= */
 
 :global(*) {
@@ -66,8 +66,9 @@ const currentPath = Astro.url.pathname;
 :global(html),
 :global(body) {
     margin: 0;
-    min-height: 100%;
+    padding: 0;
     width: 100%;
+    min-height: 100%;
 }
 
 body {
@@ -75,7 +76,7 @@ body {
 }
 
 /* =========================================
-    Overall Page Layout
+   Overall Page Layout
 ========================================= */
 
 .site-layout {
@@ -87,92 +88,87 @@ body {
 }
 
 /* =========================================
-    Main Container
+   Main Container
 ========================================= */
 
 .main-container {
     display: grid;
 
-    /* Sidebar + Main Content */
     grid-template-columns: 260px minmax(0, 1fr);
 
     flex: 1 0 auto;
-    align-items: stretch;
 
     width: 100%;
     min-width: 0;
 
+    align-items: stretch;
+
     transition: grid-template-columns 0.25s ease;
 }
 
-/* Collapsed sidebar layout */
+/* Collapsed sidebar */
 
 .main-container.sidebar-collapsed {
     grid-template-columns: 44px minmax(0, 1fr);
 }
 
-/* Initial collapsed state before JavaScript runs */
+/* Initial collapsed state */
 
 :global(.sidebar-initially-collapsed) .main-container {
     grid-template-columns: 44px minmax(0, 1fr);
 }
 
 /* =========================================
-    Sidebar Container
+   Sidebar Container
 ========================================= */
 
 .sidebar-space {
     grid-column: 1;
     grid-row: 1;
 
-    position: relative;
-
-    width: 100%;
     min-width: 0;
-    height: 100%;
+    min-height: 0;
+
+    position: relative;
 }
 
 /* =========================================
-    Main Page Content
+   Main Page Content
 ========================================= */
 
 .page-content {
     grid-column: 2;
     grid-row: 1;
 
-    display: block;
+    min-width: 0;
 
     width: 100%;
-    min-width: 0;
     max-width: none;
 
     padding: 0 16px 2rem;
-
-    transition: width 0.25s ease;
 }
 
 /* =========================================
-    Content Wrapper
+   Content Wrapper
 ========================================= */
 
 .content-wrapper {
     width: 90%;
     max-width: 1100px;
 
-    margin-left: auto;
-    margin-right: auto;
+    margin-inline: auto;
 
     position: relative;
 }
 
 /* =========================================
-    Main Layout Compatibility
+   Main Layout Compatibility
 ========================================= */
 
 .main-layout {
     display: flex;
-    min-height: 100vh;
     align-items: stretch;
-}
 
+    min-height: 100vh;
+}
 </style>

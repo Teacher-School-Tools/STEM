@@ -215,6 +215,7 @@ const sidebarPages = allPages
 </script>
 
 <style>
+
 /* =========================================
    Sidebar
 ========================================= */
@@ -223,12 +224,19 @@ const sidebarPages = allPages
     display: flex;
     flex-direction: column;
 
+    position: relative;
+
     width: 260px;
     min-width: 260px;
-    height: 100%;
 
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+
+    box-sizing: border-box;
     overflow: hidden;
-    background: aliceblue;
+
+    background-color: aliceblue;
 
     transition:
         width 0.25s ease,
@@ -245,16 +253,27 @@ const sidebarPages = allPages
     justify-content: space-between;
 
     position: relative;
-    min-height: 45px;
-    padding: 12px;
 
+    width: 100%;
+    height: 45px;
+    min-height: 45px;
+    max-height: 45px;
+
+    flex: 0 0 45px;
+
+    padding: 12px;
     box-sizing: border-box;
+
+    background: transparent;
+
     cursor: pointer;
     user-select: none;
+
+    z-index: 2;
 }
 
 .sidebar-header:hover {
-    background: #e4eef8;
+    background-color: #e4eef8;
 }
 
 /* Header title */
@@ -275,8 +294,14 @@ const sidebarPages = allPages
 /* Toggle symbol */
 
 .sidebar-toggle-arrow {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     flex-shrink: 0;
+
+    width: 24px;
+    height: 24px;
 
     font-size: 1.3rem;
     line-height: 1;
@@ -295,19 +320,31 @@ const sidebarPages = allPages
     align-items: stretch;
 
     width: 100%;
+
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: 100%;
+
     padding: 5px 10px;
     gap: 3px;
 
     box-sizing: border-box;
-    overflow-y: auto;
+
+    /* Remove scrollbar */
+    overflow: hidden;
+
+    background: transparent;
 }
 
 /* Navigation links */
 
 .sidebar-link {
     display: block;
+
     width: 100%;
     padding: 10px 12px;
+
+    flex-shrink: 0;
 
     box-sizing: border-box;
 
@@ -315,6 +352,7 @@ const sidebarPages = allPages
     text-decoration: none;
 
     border-radius: 5px;
+
     font-size: 0.95rem;
     line-height: 1.4;
 
@@ -329,13 +367,13 @@ const sidebarPages = allPages
 }
 
 .sidebar-link:hover {
-    background: #dce8f5;
+    background-color: #dce8f5;
 }
 
 /* Active page */
 
 .sidebar-link.active {
-    background: #c9dced;
+    background-color: #c9dced;
     font-weight: bold;
 }
 
@@ -352,24 +390,41 @@ const sidebarPages = allPages
 .sidebar.collapsed {
     width: 44px;
     min-width: 44px;
+    max-width: 44px;
+
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+
+    overflow: hidden;
+
+    background-color: aliceblue;
 }
 
-/* Center header content */
+/* Collapsed header */
 
 .sidebar.collapsed .sidebar-header {
     justify-content: center;
-    padding: 5px 0;
+    align-items: flex-start;
+
+    width: 44px;
+    height: 45px;
+    min-height: 45px;
+
+    padding: 10px 0 0;
+
+    flex: 0 0 45px;
 }
 
 /* Hide header title immediately */
 
 .sidebar.collapsed .sidebar-title {
+    display: none;
+
     opacity: 0;
     visibility: hidden;
 
-    transition:
-        opacity 0s,
-        visibility 0s;
+    transition: none;
 }
 
 /* Hide navigation text immediately */
@@ -380,14 +435,23 @@ const sidebarPages = allPages
     visibility: hidden;
     pointer-events: none;
 
-    transition:
-        opacity 0s,
-        visibility 0s;
+    transition: none;
 }
 
 /* Keep toggle symbol visible */
 
 .sidebar.collapsed .sidebar-toggle-arrow {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 44px;
+    height: 24px;
+
+    margin: 0;
+    padding: 0;
+
     visibility: visible;
     opacity: 1;
 
@@ -397,6 +461,13 @@ const sidebarPages = allPages
 /* =========================================
    Expanded Sidebar
 ========================================= */
+
+.sidebar:not(.collapsed) {
+    width: 260px;
+    min-width: 260px;
+
+    background-color: aliceblue;
+}
 
 .sidebar:not(.collapsed) .sidebar-title,
 .sidebar:not(.collapsed) .sidebar-link,
@@ -409,10 +480,33 @@ const sidebarPages = allPages
         visibility 0s linear 0.3s;
 }
 
-/* Rotate toggle symbol */
+.sidebar:not(.collapsed) .sidebar-header {
+    justify-content: space-between;
+    align-items: center;
+}
 
 .sidebar:not(.collapsed) .sidebar-toggle-arrow {
     transform: rotate(90deg);
+}
+
+/* =========================================
+   Sidebar Space
+========================================= */
+
+.sidebar-space {
+    grid-column: 1;
+    grid-row: 1;
+
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+
+    overflow: hidden;
+
+    background-color: aliceblue;
 }
 
 </style>

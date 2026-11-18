@@ -179,8 +179,7 @@ const { gameName, gameDir } = Astro.props;
         <div class="control-group">
 
             <label for="temperature">
-                Temperature:
-                <span id="temperatureValue">298 K</span>
+                Temperature: <span id="temperatureValue">298 K</span>
             </label>
 
             <input
@@ -197,8 +196,7 @@ const { gameName, gameDir } = Astro.props;
         <div class="control-group">
 
             <label for="atomCount">
-                Number of Atoms:
-                <span id="atomCountValue">5</span>
+                Number of Atoms: <span id="atomCountValue">5</span>
             </label>
 
             <input
@@ -760,6 +758,9 @@ initializeKeyboardControls();
     --description-width: 180px;
     --controls-width: 180px;
     --canvas-max-width: 600px;
+
+    --settings-padding: 16px;
+    --transition-speed: 0.2s;
 }
 
 /* =========================================
@@ -798,7 +799,10 @@ initializeKeyboardControls();
     font-style: italic;
 
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+
+    transition:
+        background-color var(--transition-speed),
+        color var(--transition-speed);
 }
 
 .instructions-button:hover {
@@ -854,7 +858,7 @@ initializeKeyboardControls();
 }
 
 /* =========================================
-   Game Canvas Container
+   Game Canvas
 ========================================= */
 
 .game-canvas-container {
@@ -872,73 +876,31 @@ initializeKeyboardControls();
     display: block;
 
     width: 100%;
+    max-width: 600px;
     height: auto;
+
+    aspect-ratio: 3 / 2;
+
+    box-sizing: border-box;
 
     border: 2px solid var(--game-text);
     background: var(--game-background);
 }
 
 /* =========================================
-   Game Controls
-========================================= */
-
-.game-controls {
-    grid-column: 3;
-
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-
-    width: 100%;
-}
-
-.control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.game-controls label {
-    display: block;
-}
-
-.game-controls input,
-.game-controls select {
-    width: 100%;
-    box-sizing: border-box;
-    margin: 5px 0 15px;
-}
-
-.game-controls select {
-    padding: 8px;
-    cursor: pointer;
-}
-
-.game-controls button {
-    width: 100%;
-    padding: 10px;
-    cursor: pointer;
-}
-
-/* Game Buttons */
-
-.game-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* Level-Specific Controls */
-
-.level0-controls {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* =========================================
    Cannon Customization
 ========================================= */
+
+#customization-settings {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+#customization-settings.is-visible {
+    display: flex;
+}
 
 .cannon-settings {
     display: flex;
@@ -946,7 +908,7 @@ initializeKeyboardControls();
     gap: 12px;
 
     width: 100%;
-    padding: 16px;
+    padding: var(--settings-padding);
 
     background: var(--game-background);
     border: 1px solid var(--game-border);
@@ -962,15 +924,16 @@ initializeKeyboardControls();
 
 .settings-row {
     display: flex;
-    gap: 20px;
     align-items: center;
+    gap: 20px;
 }
 
 .setting {
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: 5px;
-    flex: 1;
+
     min-width: 0;
 }
 
@@ -1008,11 +971,81 @@ initializeKeyboardControls();
     color: var(--game-text);
 
     cursor: pointer;
-    transition: background-color 0.2s;
+
+    transition: background-color var(--transition-speed);
 }
 
 .cannon-settings button:hover {
     background: #e5e5e5;
+}
+
+/* =========================================
+   Game Controls
+========================================= */
+
+.game-controls {
+    grid-column: 3;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    width: 100%;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.control-group label {
+    display: block;
+}
+
+.game-controls input,
+.game-controls select {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 5px 0 15px;
+}
+
+.game-controls select {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.game-controls button {
+    width: 100%;
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Game Buttons */
+
+.game-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Level-Specific Controls */
+
+.level0-controls {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.level0-controls.is-visible {
+    display: flex;
+}
+
+/* Locked Level Options */
+
+#levelSelector option:disabled {
+    color: #999;
+    background-color: #e5e5e5;
 }
 
 /* =========================================
@@ -1032,6 +1065,10 @@ initializeKeyboardControls();
     padding: 20px;
 
     background: rgba(0, 0, 0, 0.7);
+}
+
+.instructions-modal.is-visible {
+    display: flex;
 }
 
 .instructions-content {
@@ -1128,38 +1165,16 @@ initializeKeyboardControls();
     }
 
 }
-/* =========================================
-   Locked Level Options
-========================================= */
-
-#levelSelector option:disabled {
-    color: #999;
-    background-color: #e5e5e5;
-}
 
 /* =========================================
-   Customization Settings
+   Accessibility
 ========================================= */
 
-#customization-settings {
-    display: none;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-}
-
-.cannon-settings {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    width: 100%;
-    padding: 16px;
-
-    background: var(--game-background);
-    border: 1px solid var(--game-border);
-    border-radius: var(--game-radius);
-
-    box-sizing: border-box;
+.instructions-button:focus-visible,
+.close-instructions:focus-visible,
+.cannon-settings button:focus-visible,
+.game-controls button:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 3px;
 }
 </style>
