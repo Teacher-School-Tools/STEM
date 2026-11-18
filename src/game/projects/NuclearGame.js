@@ -107,7 +107,13 @@ export default class NuclearGame extends Game {
     // =========================================
 
     setLevel(level) {
-        this.levelManager.setLevel(level);
+        const success = this.levelManager.setLevel(level);
+
+        if (!success) return false;
+
+        this.cannonManager.resetPosition();
+
+        return true;
     }
 
     showCustomizationControls() {
@@ -133,12 +139,15 @@ export default class NuclearGame extends Game {
     resetCannonAppearance() {
         this.cannonManager.resetAppearance();
     }
+    resetCannonPosition() {
+        this.cannonManager.resetPosition();
+    }
 
-    // =========================================
-    // Game State
-    // =========================================
+// =========================================
+// Game State
+// =========================================
 
-        start() {
+    start() {
         this.levelComplete = false;
         this.finalScore = 0;
 

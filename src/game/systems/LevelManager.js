@@ -1,28 +1,56 @@
-import { LEVELS } from "../config/levels.js";
+import { LEVELS, DEFAULT_LEVEL } from "../config/levels.js";
 
 export default class LevelManager {
-
     constructor(game) {
         this.game = game;
+
+        // Highest level the user has unlocked
+        this.unlockedLevel = DEFAULT_LEVEL;
+    }
+
+    getLevelNumber(level) {
+        return Number(level.replace("level", ""));
     }
 
     setLevel(level) {
         const game = this.game;
-        const settings = LEVELS[level];
 
-        if (!settings) return;
+        // Check that the requested level exists
+        if (!LEVELS[level]) {
+            return false;
+        }
+
+        // Prevent skipping locked levels
+        if (
+            this.getLevelNumber(level) >
+            this.getLevelNumber(this.unlockedLevel)
+        ) {
+            return false;
+        }
 
         game.currentLevel = level;
 
-        game.atomHealth = settings.atomHealth;
-        game.atomCount = settings.atomCount;
+        const config = LEVELS[level];
 
-        game.setTemperature(settings.temperature);
+        game.atomCount = config.atomCount;
+        game.temperature = config.temperature;
+        game.atomHealth = config.atomHealth;
 
-        game.canvas.style.backgroundColor =
-            settings.background;
+        game.canvas.style.backgroundColor = config.background;
 
-        game.restart();
+        game.levelComplete = false;
+        game.finalScore = 0;
+
+        game.projectiles = [];
+
+        game.atomManager.clearAtoms();
+        game.atomManager.createAtoms(game.atomCount);
+
+        game.resetScore();
+        
+        game.start()
+
+        return true;
     }
 
     showCustomizationControls() {
@@ -32,28 +60,36 @@ export default class LevelManager {
     checkCompletion() {
         const game = this.game;
 
-        if (game.atoms.length !== 0 || game.levelComplete) {
+        if (game.atoms.length > 0 || game.levelComplete) {
             return;
         }
 
         game.levelComplete = true;
         game.finalScore = game.scoreManager.getValue();
-
         game.state = "finished";
+
+        this.unlockNextLevel();
     }
 
-    start() {
-        const game = this.game;
+    unlockNextLevel() {
+    const currentNumber = this.getLevelNumber(
+        this.game.currentLevel
+    );
 
-        if (game.levelComplete) {
-            game.levelComplete = false;
-            game.finalScore = 0;
+    const nextLevel = `level${currentNumber + 1}`;
+
+    if (
+        LEVELS[nextLevel] &&
+        currentNumber >= this.getLevelNumber(this.unlockedLevel)
+    ) {
+        this.unlockedLevel = nextLevel;
+
+        // Refresh the level dropdown
+        if (typeof this.game.onLevelProgress === "function") {
+            this.game.onLevelProgress();
         }
-
-        game.start();
     }
-
-        
+}
 
     restart() {
         const game = this.game;
@@ -61,22 +97,16 @@ export default class LevelManager {
         game.levelComplete = false;
         game.finalScore = 0;
 
-        // Reset cannon
         game.cannon.angle = -Math.PI / 2;
 
-        // Reset projectiles
         game.projectiles = [];
         game.fireCooldown = 0;
 
-        // Reset atoms
         game.atomManager.clearAtoms();
         game.atomManager.createAtoms(game.atomCount);
 
-        // Reset score
         game.resetScore();
 
         game.start()
     }
-
-
 }

@@ -65,4 +65,7 @@ export default class CannonManager {
         this.game.cannon.color = "#555555";
         this.game.cannon.emoji = "";
     }
+    resetPosition() {
+        this.game.cannon.angle = -Math.PI / 2;
+    }
 }

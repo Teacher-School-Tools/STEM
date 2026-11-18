@@ -78,17 +78,23 @@ const { gameName, gameDir } = Astro.props;
     </section>
 
     <!-- Canvas and Cannon Settings -->
-    <section class="game-canvas-container">
+<!-- =========================================
+     Canvas and Cannon Settings
+========================================= -->
 
-        <canvas
-            id="gameCanvas"
-            width="600"
-            height="400"
-            tabindex="0"
-            aria-label="Nuclear physics game"
-        ></canvas>
+<section class="game-canvas-container">
 
-        <!-- Cannon Customization -->
+    <canvas
+        id="gameCanvas"
+        width="600"
+        height="400"
+        tabindex="0"
+        aria-label="Nuclear physics game"
+    ></canvas>
+
+    <!-- Cannon Customization -->
+    <div id="customization-settings">
+
         <div class="cannon-settings">
 
             <h3>Cannon Customization</h3>
@@ -134,77 +140,81 @@ const { gameName, gameDir } = Astro.props;
 
         </div>
 
-    </section>
+    </div>
 
-    <!-- Game Controls -->
-    <section class="game-controls">
+</section>
 
-        <!-- Level Selection -->
+<!-- =========================================
+     Game Controls
+========================================= -->
+
+<section class="game-controls">
+
+    <!-- Level Selection -->
+    <div class="control-group">
+
+        <label for="levelSelector">
+            Select Level
+        </label>
+
+        <select id="levelSelector">
+            <option value="level0">Practice</option>
+            <option value="level1">Level 1</option>
+            <option value="level2">Level 2</option>
+            <option value="level3">Level 3</option>
+        </select>
+
+    </div>
+
+    <!-- Game Buttons -->
+    <div class="game-buttons">
+        <button id="startGame">Start</button>
+        <button id="pauseGame">Pause</button>
+        <button id="restartGame">Restart</button>
+    </div>
+
+    <!-- Practice Mode Controls -->
+    <div id="level0-controls" class="level0-controls">
+
         <div class="control-group">
 
-            <label for="levelSelector">
-                Select Level
+            <label for="temperature">
+                Temperature:
+                <span id="temperatureValue">298 K</span>
             </label>
 
-            <select id="levelSelector">
-                <option value="level0">Practice</option>
-                <option value="level1">Level 1</option>
-                <option value="level2">Level 2</option>
-                <option value="level3">Level 3</option>
-            </select>
+            <input
+                type="range"
+                id="temperature"
+                min="298"
+                max="798"
+                value="298"
+                step="1"
+            />
 
         </div>
 
-        <!-- Game Buttons -->
-        <div class="game-buttons">
-            <button id="startGame">Start</button>
-            <button id="pauseGame">Pause</button>
-            <button id="restartGame">Restart</button>
-        </div>
+        <div class="control-group">
 
-        <!-- Level 4 Controls -->
-        <div id="level0-controls" class="level0-controls">
+            <label for="atomCount">
+                Number of Atoms:
+                <span id="atomCountValue">5</span>
+            </label>
 
-            <div class="control-group">
-
-                <label for="temperature">
-                    Temperature:
-                    <span id="temperatureValue">298 K</span>
-                </label>
-
-                <input
-                    type="range"
-                    id="temperature"
-                    min="298"
-                    max="798"
-                    value="298"
-                    step="1"
-                />
-
-            </div>
-
-            <div class="control-group">
-
-                <label for="atomCount">
-                    Number of Atoms:
-                    <span id="atomCountValue">5</span>
-                </label>
-
-                <input
-                    type="range"
-                    id="atomCount"
-                    min="1"
-                    max="50"
-                    value="5"
-                    step="1"
-                />
-
-            </div>
+            <input
+                type="range"
+                id="atomCount"
+                min="1"
+                max="50"
+                value="5"
+                step="1"
+            />
 
         </div>
 
-    </section>
+    </div>
 
+</section>
 </div>
 
 <!-- =========================================
@@ -338,20 +348,38 @@ function initializeInstructions() {
 // Level Description
 // =========================================
 
-function updateLevelDescription(levelName) {
-
-    const level = levelDescriptions[levelName];
-
-    const title = document.querySelector("#level-description-title");
-    const description = document.querySelector("#level-description-text");
-
-    if (!level || !title || !description) {
+function updateLevelDescription() {
+    if (
+        !(levelSelector instanceof HTMLSelectElement)
+    ) {
         return;
     }
 
-    title.textContent = level.title;
-    description.textContent = level.description.trim();
+    const titleElement = document.querySelector(
+        "#level-description-title"
+    );
 
+    const descriptionElement = document.querySelector(
+        "#level-description-text"
+    );
+
+    if (
+        !(titleElement instanceof HTMLElement) ||
+        !(descriptionElement instanceof HTMLElement)
+    ) {
+        return;
+    }
+
+    const selectedLevel = levelSelector.value;
+    const levelInfo = levelDescriptions[selectedLevel];
+
+    if (!levelInfo) {
+        console.warn(`No description found for ${selectedLevel}`);
+        return;
+    }
+
+    titleElement.textContent = levelInfo.title;
+    descriptionElement.textContent = levelInfo.description;
 }
 
 // =========================================
@@ -364,11 +392,20 @@ function updateLevelControls() {
         levelSelector instanceof HTMLSelectElement &&
         levelSelector.value === "level0";
 
-    // Only show Level 4 controls in Level 4
-    if (level0Controls instanceof HTMLElement) {
-        level0Controls.style.display = isLevel0 ? "flex" : "none";
+    const customizationSettings =
+        document.querySelector("#customization-settings");
+
+    // Show/hide cannon customization
+    if (customizationSettings instanceof HTMLElement) {
+        customizationSettings.style.display =
+            isLevel0 ? "flex" : "none";
     }
 
+    // Show/hide temperature and atom-count controls
+    if (level0Controls instanceof HTMLElement) {
+        level0Controls.style.display =
+            isLevel0 ? "flex" : "none";
+    }
 }
 
 function resetLevel0Controls() {
@@ -437,6 +474,33 @@ function initializeCannonCustomization(game) {
 }
 
 // =========================================
+// Level Dropdown Progression
+// =========================================
+
+function updateLevelDropdown(game) {
+
+    if (!(levelSelector instanceof HTMLSelectElement)) {
+        return;
+    }
+
+    const unlockedLevelNumber =
+        game.levelManager.getLevelNumber(
+            game.levelManager.unlockedLevel
+        );
+
+    Array.from(levelSelector.options).forEach(option => {
+
+        const optionLevelNumber =
+            game.levelManager.getLevelNumber(option.value);
+
+        // Disable levels that have not been unlocked
+        option.disabled = optionLevelNumber > unlockedLevelNumber;
+
+    });
+
+}
+
+// =========================================
 // Level Selection
 // =========================================
 
@@ -446,20 +510,25 @@ function initializeLevelSelection(game) {
         return;
     }
 
+    levelSelector.value = game.currentLevel;
+
+    updateLevelDropdown(game);
+
+    updateLevelDescription();
+
     levelSelector.addEventListener("change", () => {
-
         const selectedLevel = levelSelector.value;
+        const success = game.setLevel(selectedLevel);
 
-        // Update interface
-        updateLevelControls();
-        updateLevelDescription(selectedLevel);
-
-        // Load selected level
-        if (typeof game.setLevel === "function") {
-            game.setLevel(selectedLevel);
+        if (!success) {
+            levelSelector.value = game.currentLevel;
+            updateLevelDescription();
+            return;
         }
 
-        // Reset sandbox settings when entering Level 0
+        updateLevelControls();
+        updateLevelDescription();
+
         if (selectedLevel === "level0") {
             resetLevel0Controls();
         }
@@ -467,9 +536,7 @@ function initializeLevelSelection(game) {
         if (canvas instanceof HTMLCanvasElement) {
             canvas.focus();
         }
-
     });
-
 }
 
 // =========================================
@@ -556,7 +623,7 @@ function initializeGameButtons(game) {
     // Start
     startButton.addEventListener("click", () => {
 
-        if (!game.running) {
+        if (game.state !== "playing") {
             game.start();
         }
 
@@ -649,6 +716,11 @@ function initializeGame() {
     // Create game instance
     const game = new NuclearGame(canvas);
 
+    // Refresh dropdown whenever a level is unlocked
+    game.onLevelProgress = () => {
+        updateLevelDropdown(game);
+    };
+
     // Initialize interface controls
     initializeCannonCustomization(game);
     initializeLevelSelection(game);
@@ -658,12 +730,6 @@ function initializeGame() {
 
     // Set initial interface state
     updateLevelControls();
-
-    updateLevelDescription(
-        levelSelector instanceof HTMLSelectElement
-            ? levelSelector.value
-            : "level1"
-    );
 
 }
 
@@ -1062,5 +1128,38 @@ initializeKeyboardControls();
     }
 
 }
+/* =========================================
+   Locked Level Options
+========================================= */
 
+#levelSelector option:disabled {
+    color: #999;
+    background-color: #e5e5e5;
+}
+
+/* =========================================
+   Customization Settings
+========================================= */
+
+#customization-settings {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.cannon-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+    padding: 16px;
+
+    background: var(--game-background);
+    border: 1px solid var(--game-border);
+    border-radius: var(--game-radius);
+
+    box-sizing: border-box;
+}
 </style>

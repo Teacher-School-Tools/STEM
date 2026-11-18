@@ -15,8 +15,11 @@ export default class Game {
     }
 
     start() {
+
         this.state = "playing";
 
+        // Do not create another animation loop
+        // if one is already running
         if (this.running) {
             return;
         }
