@@ -1,0 +1,20 @@
+---
+import CurriculumExpectations from "../../components/CurriculumExpectations.astro"
+import MainLayout from "../../layouts/MainLayout.astro";
+export const description = "An defense game something something"
+const base = import.meta.env.BASE_URL;
+---
+<MainLayout>
+
+<h1>Titration Defense</h1>
+
+    <div class="game-container">
+        <iframe
+            src={`../TitrationDefense/index.html`}
+			
+            title="Titration Defense"
+            allowfullscreen
+        ></iframe>
+    </div>
+
+</MainLayout>
