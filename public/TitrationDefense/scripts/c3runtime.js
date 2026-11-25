@@ -1439,12 +1439,19 @@ self.C3_ExpressionFuncs = [
 		},
 		() => "",
 		() => 270,
-		() => 5,
+		() => 6,
 		() => 1,
 		() => "HCl",
 		() => 0.1,
 		() => 2,
 		() => "NaOH",
+		() => "Acetic Acid",
+		() => 3,
+		() => 5,
+		() => 0.000018,
+		() => "NH3",
+		() => 4,
+		() => 5.6e-10,
 		p => {
 			const v0 = p._GetNode(0).GetVar();
 			return () => v0.GetValue();
@@ -1465,7 +1472,13 @@ self.C3_ExpressionFuncs = [
 		() => 90,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
-			return () => f0(0, 1);
+			const n1 = p._GetNode(1);
+			return () => (Math.round(((14 + f0(n1.ExpInstVar())) * 100)) / 100);
+		},
+		() => 7,
+		p => {
+			const f0 = p._GetNode(0).GetBoundMethod();
+			return () => f0(2, 3);
 		},
 		p => {
 			const n0 = p._GetNode(0);
@@ -1478,43 +1491,54 @@ self.C3_ExpressionFuncs = [
 			return () => n0.ExpObject(n1.ExpInstVar(), 2);
 		},
 		p => {
+			const n0 = p._GetNode(0);
+			const n1 = p._GetNode(1);
+			return () => n0.ExpObject(n1.ExpInstVar(), 3);
+		},
+		p => {
+			const n0 = p._GetNode(0);
+			const n1 = p._GetNode(1);
+			return () => n0.ExpObject(n1.ExpInstVar(), 4);
+		},
+		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			const n1 = p._GetNode(1);
 			return () => (Math.round(((-f0(n1.ExpInstVar())) * 100)) / 100);
 		},
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
+			return () => f0(0, 1, 2, 3);
+		},
+		p => {
+			const n0 = p._GetNode(0);
+			return () => (n0.ExpInstVar() + 0.001);
+		},
+		p => {
+			const n0 = p._GetNode(0);
+			return () => (n0.ExpInstVar() + 0.00005);
+		},
+		p => {
+			const n0 = p._GetNode(0);
+			return () => (n0.ExpInstVar() + 0.1);
+		},
+		p => {
+			const n0 = p._GetNode(0);
+			return () => (n0.ExpInstVar() + 0.005);
+		},
+		p => {
+			const n0 = p._GetNode(0);
 			const n1 = p._GetNode(1);
-			return () => (Math.round(((14 + f0(n1.ExpInstVar())) * 100)) / 100);
-		},
-		p => {
-			const n0 = p._GetNode(0);
-			return () => (n0.ExpInstVar() + 1);
-		},
-		p => {
-			const n0 = p._GetNode(0);
-			return () => (n0.ExpInstVar() - 0.0005);
-		},
-		() => 0.00005,
-		() => -0.00005,
-		() => 7,
-		() => -0.000005,
-		p => {
-			const n0 = p._GetNode(0);
-			const n1 = p._GetNode(1);
-			return () => (n0.ExpInstVar() - n1.ExpInstVar());
+			const n2 = p._GetNode(2);
+			return () => ((n0.ExpInstVar() - n1.ExpInstVar()) / n2.ExpInstVar());
 		},
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			const n1 = p._GetNode(1);
 			const n2 = p._GetNode(2);
-			return () => (Math.round(((14 + f0((n1.ExpInstVar() / n2.ExpInstVar()))) * 100)) / 100);
-		},
-		p => {
-			const f0 = p._GetNode(0).GetBoundMethod();
-			const n1 = p._GetNode(1);
-			const n2 = p._GetNode(2);
-			return () => (Math.round(((-f0((n1.ExpInstVar() / n2.ExpInstVar()))) * 100)) / 100);
+			const n3 = p._GetNode(3);
+			const n4 = p._GetNode(4);
+			const n5 = p._GetNode(5);
+			return () => (Math.round((f0((n1.ExpInstVar() / n2.ExpInstVar()), (n3.ExpInstVar() / n4.ExpInstVar()), n5.ExpInstVar()) * 100)) / 100);
 		},
 		p => {
 			const n0 = p._GetNode(0);
@@ -1524,26 +1548,27 @@ self.C3_ExpressionFuncs = [
 		},
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
-			const v1 = p._GetNode(1).GetVar();
-			const n2 = p._GetNode(2);
-			return () => and((((and("Score:", f0(v1.GetValue())) + "\n") + "\n") + "pH of Ecosystem:"), n2.ExpInstVar());
+			return () => f0();
 		},
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
-			return () => f0();
+			const v1 = p._GetNode(1).GetVar();
+			const n2 = p._GetNode(2);
+			return () => and((and("Score:", f0(v1.GetValue())) + ", Lives Remaining:"), n2.ExpInstVar());
 		},
-		() => 10,
-		() => 4,
+		() => 14,
 		p => {
 			const n0 = p._GetNode(0);
 			const n1 = p._GetNode(1);
 			return () => (n0.ExpInstVar() + n1.ExpInstVar());
 		},
-		() => 0.0005,
-		() => -0.0005,
+		() => 7.5,
+		() => 6.5,
+		() => 100,
+		() => 9,
 		p => {
 			const n0 = p._GetNode(0);
-			return () => (-n0.ExpInstVar());
+			return () => (n0.ExpInstVar() - 1);
 		},
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
