@@ -1,55 +1,98 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import MainLayout from '../layouts/MainLayout.astro';
 export const description = "TEMP"
+
 const base = import.meta.env.BASE_URL;
+
+// Automatically import descriptions from directory index pages
+const pages = import.meta.glob(
+    "/src/pages/**/index.astro",
+    {
+        eager: true,
+        import: "description"
+    }
+);
+
+const directories = Object.entries(pages)
+    .map(([page, description]) => {
+        const relativePath = page
+            .replace("/src/pages/", "")
+            .replace("/index.astro", "");
+
+        // Ignore root index page
+        if (!relativePath || relativePath === "index") {
+            return null;
+        }
+
+        const name = relativePath
+            .split("/")
+            .pop()
+            .replace(/^\d+-/, "");
+
+        const href = base + "/" +
+            relativePath
+                .split("/")
+                .map(segment =>
+                    encodeURIComponent(segment).replace(/%26/g, "&")
+                )
+                .join("/") +
+            "/";
+
+        return {
+            name,
+            href,
+            path: relativePath,
+            desc: description ?? ""
+        };
+    })
+    .filter(Boolean)
+    .sort((a, b) =>
+        a.path.localeCompare(b.path, undefined, {
+            numeric: true
+        })
+    );
 ---
 
-<!doctype html>
-<html lang="en">
-	<MainLayout>
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<!-- <Header /> -->
-		<!-- <HeaderDropdown/> -->
-		<!-- <Sidebar/> -->
-		<main>
-
-			<h1>Welcome to SCH3U!</h1>
-			<p>
+<MainLayout>
+<section class="directory-list">
+    <h1>Welcome to SCH3U!</h1>
+<p>
 				This website hosts various resources, 
 				lesson plans, and content covering the grade 11 
 				university stream chemistry course. Use the section 
-				headers at the top or the sidebar to find content 
+				headers at the top to find content 
 				regarding the 5 course specific streams for grade 11 chemistry.
 			</p>
-			<h2>
-				Content Covered
-			</h2>
-			<p>
-				The content covered in this website is as follows:
-			</p>
-			<h3><a href=`${base}/01-Matter & Trends & Bonding`>Matter, Trends & Bonding</a></h3>
-			<p>Matter content</p>
-			<h3><a href=`${base}/02-Chemical Reactions``>Chemical Reactions</a></h3>
-			<p>Chemical Reactions content covered</p>
-			<h3><a href=`${base}/03-Quantities in Chemical Reactions`>Quantities in Chemical Reactions</a></h3>
-			<p>Reactions content</p>
-			<h3><a href=`${base}/04-Solutions & Solubility`>Solutions and Solubility</a></h3>
-			<p>Solutions and Solubility Content</p>
-			<h3><a href=`${base}/05-Gases and Atmospheric Chemistry`>Gases and Atmospheric Chemistry</a></h3>
-			<p>Gases and Atmospheric Chemistry Content Covered</p>
-			
-			
-			
-			<!-- <p>
-				STEM Capstone, built by Caelan Baron, Justin Bishop, Andrew Breau, Dhruv Dhoum, and Ricky Fan.
+    <ul>
+        {directories.map((directory) => (
+            <li>
+                <h2><a href={directory.href}>
+                    {directory.name}
+                </a></h2>
+            </li>
+			<p>{directory.desc}</p>
+        ))}
+    </ul>
+</section>
+</MainLayout>
+<style>
+    .directory-list ul {
+        list-style: none;
+        padding: 0;
+    }
 
-			</p> -->
-		</main>
-	</body>
-	</MainLayout>
-</html>
+    .directory-list li {
+        margin-bottom: 12px;
+    }
+
+    .directory-list a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .directory-list a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+---
