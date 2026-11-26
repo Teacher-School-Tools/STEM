@@ -9,18 +9,6 @@ const { title = "SCH3U Curriculum Resources" } = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
 
-<script is:inline>
-  (() => {
-    const isCollapsed =
-      localStorage.getItem("sidebar-collapsed") === "true";
-
-    document.documentElement.classList.toggle(
-      "sidebar-initially-collapsed",
-      isCollapsed
-    );
-  })();
-</script>
-
 <script>
     import renderMathInElement from "katex/contrib/auto-render";
 
@@ -40,6 +28,19 @@ const currentPath = Astro.url.pathname;
 <!doctype html>
 <html lang="en">
   <head>
+
+    <!-- Restore sidebar state before rendering -->
+    <script is:inline>
+      (() => {
+        const isCollapsed =
+          localStorage.getItem("sidebarCollapsed") === "true";
+
+        document.documentElement.classList.toggle(
+          "sidebar-initially-collapsed",
+          isCollapsed
+        );
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
@@ -53,7 +54,7 @@ const currentPath = Astro.url.pathname;
       <div class="main-container">
 
         <div class="sidebar-space">
-          <Sidebar/>
+          <Sidebar />
         </div>
 
         <main class="page-content">
@@ -128,10 +129,16 @@ body {
     grid-template-columns: 44px minmax(0, 1fr);
 }
 
-/* Initial collapsed state */
+/* =========================================
+   Initial Sidebar State
+========================================= */
 
-:global(.sidebar-initially-collapsed) .main-container {
+/* Apply saved collapsed state immediately.
+   Disable animation during initial rendering. */
+
+:global(html.sidebar-initially-collapsed) .main-container {
     grid-template-columns: 44px minmax(0, 1fr);
+    transition: none;
 }
 
 /* =========================================
@@ -187,6 +194,10 @@ body {
 
     min-height: 100vh;
 }
+
+/* =========================================
+   Mathematical Content
+========================================= */
 
 .math-display {
     margin: 1.5rem 0;
