@@ -151,10 +151,13 @@ const sidebarPages = allPages
 
     const STORAGE_KEY = "sidebarCollapsed";
 
-    // Restore saved sidebar state
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    const initiallyCollapsed = savedState === "true";
+    // Read the state already restored by MainLayout
+    const initiallyCollapsed =
+        document.documentElement.classList.contains(
+            "sidebar-initially-collapsed"
+        );
 
+    // Synchronize the sidebar and grid
     sidebar?.classList.toggle("collapsed", initiallyCollapsed);
 
     mainContainer?.classList.toggle(
@@ -162,9 +165,15 @@ const sidebarPages = allPages
         initiallyCollapsed
     );
 
+    // Remove temporary initialization class
+    document.documentElement.classList.remove(
+        "sidebar-initially-collapsed"
+    );
+
     // Update accessibility information
     function updateToggle() {
-        const collapsed = sidebar?.classList.contains("collapsed");
+        const collapsed =
+            sidebar?.classList.contains("collapsed") ?? false;
 
         sidebarToggle?.setAttribute(
             "aria-expanded",
@@ -181,7 +190,8 @@ const sidebarPages = allPages
     function toggleSidebar() {
         sidebar?.classList.toggle("collapsed");
 
-        const collapsed = sidebar?.classList.contains("collapsed") ?? false;
+        const collapsed =
+            sidebar?.classList.contains("collapsed") ?? false;
 
         // Update main layout grid
         mainContainer?.classList.toggle(
@@ -240,6 +250,39 @@ const sidebarPages = allPages
     transition:
         width 0.25s ease,
         min-width 0.25s ease;
+}
+
+/* =========================================
+   Initial Sidebar Restoration
+========================================= */
+
+/* Apply collapsed appearance before JavaScript runs */
+
+:global(html.sidebar-initially-collapsed) .sidebar {
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+
+    transition: none;
+}
+
+:global(html.sidebar-initially-collapsed) .sidebar .sidebar-header {
+    justify-content: center;
+}
+
+:global(html.sidebar-initially-collapsed) .sidebar .sidebar-title {
+    display: none;
+}
+
+:global(html.sidebar-initially-collapsed) .sidebar .sidebar-link,
+:global(html.sidebar-initially-collapsed) .sidebar .sidebar-nav p {
+    opacity: 0;
+    visibility: hidden;
+    transition: none;
+}
+
+:global(html.sidebar-initially-collapsed) .sidebar .sidebar-toggle-arrow {
+    transform: rotate(0deg);
 }
 
 /* =========================================
@@ -329,7 +372,6 @@ const sidebarPages = allPages
 
     box-sizing: border-box;
 
-    /* Remove scrollbar */
     overflow: hidden;
 
     background: transparent;
